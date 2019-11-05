@@ -1,6 +1,8 @@
 # mate-red
 ## MATE Red codebase
 
+#### Code:
+
 bruh.ino - updated script (11/5)
 
 bruhbackup.ino - old script (10/27)
@@ -11,7 +13,7 @@ nah.ino - old script (11/1)
 
 
 
-Required Libraries:
+#### Required Libraries:
 
 Servo.h
 
@@ -19,7 +21,7 @@ Wire.h
 
 
 
-Hardware:
+#### Hardware:
 
 Master - Arduino Uno SMD Edition
 
