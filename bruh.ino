@@ -1,6 +1,7 @@
 #define fori(i, n) for(int i = 0; i < n; ++i)
 #define IN(i, l, r) (l < i && i < r)
 #define LINR(i, l, r) (l <= i && i <= r)
+#define elif else if
 #include <Servo.h>
 #include <Wire.h>
 
@@ -19,18 +20,8 @@ float loopIndex = 1500;
 int loopStage = 1;
 
 void setup() {
-  Wire.begin();
-  Serial.begin(9600);
-  Serial.println("PROGRAM INITIALIZED");
-  Serial.println(arraySize);
-  fori(i, arraySize) {
-    Serial.print("attached ");
-    Serial.print(i);
-    Serial.print(" to ");
-    Serial.println(pins[i]);
-    controllers[i].attach(pins[i]);  
-  }
-  cservo.attach(servopin);
+  initializeProgram();
+  attachPins();
   delay(1000);
   Serial.println("INPUT PERCENTAGE");
   cservo.writeMicroseconds(1500);
@@ -40,18 +31,7 @@ void setup() {
 
 
 void loop() {
-  fori (i, arraySize) {
-    if (pins[i] < 7){
-      controllers[i].writeMicroseconds(percentages[i] * 14 + 800);
-    }else if(pins[i] == 100){
-      Wire.beginTransmission(8); // transmit to device #8
-      Wire.write(percentages[i] * 10 + 1000);              // sends one byte
-      Wire.endTransmission();    // stop transmitting
-    }
-    else{
-      controllers[i].writeMicroseconds(percentages[i] * 10 + 1000);
-    }
-  }
+  writeMcs();
   if (Serial.available() > 1) {
     int controlValue = Serial.read() - '0';
     int inputValue = Serial.parseInt();
@@ -62,7 +42,7 @@ void loop() {
     if (inputValue == 50) {
       Serial.println("STOPPING");
       percentages[controlValue] = 50;
-    } else if (LINR(inputValue, 0, 100)) {
+    } elif (LINR(inputValue, 0, 100)) {
       percentages[controlValue] = inputValue;
       Serial.print("SET VALUE TO ");
       Serial.print(percentages[controlValue]);
@@ -72,6 +52,38 @@ void loop() {
       }
     } else {
       Serial.println("INVALID VALUE");
+    }
+  }
+}
+
+void initializeProgram() {
+  Wire.begin();
+  Serial.begin(9600);
+  Serial.println("PROGRAM INITIALIZED");
+  Serial.println(arraySize);
+}
+
+void attachPins() {
+  fori(i, arraySize) {
+    Serial.print("attached ");
+    Serial.print(i);
+    Serial.print(" to ");
+    Serial.println(pins[i]);
+    controllers.attach(pins[i]);
+  }
+  cservo.attach(servopin);
+}
+
+void writeMcs() {
+  fori(i, arraySize) {
+    if(pins[i] < 7) {
+      controllers.writeMicroseconds(percentages[i] * 14 + 800);
+    } elif (pins[i] == 100) {
+      Wire.beginTransmission(8);
+      Wire.write(percentages[i] * 10 + 1000);
+      Wire.endTransmission();
+    } else {
+      controllers[i].writeMicroseconds(percentages[i] * 10 + 1000);
     }
   }
 }
