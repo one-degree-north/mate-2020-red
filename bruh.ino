@@ -25,8 +25,7 @@ void setup() {
   delay(1000);
   Serial.println("INPUT PERCENTAGE");
   cservo.writeMicroseconds(1500);
-  pinMode(2, OUTPUT);
-  digitalWrite(2, HIGH);
+  pinOtherArduino();
 }
 
 
@@ -86,4 +85,9 @@ void writeMcs() {
       controllers[i].writeMicroseconds(percentages[i] * 10 + 1000);
     }
   }
+}
+
+pinOtherArduino() {
+  pinMode(2, OUTPUT);
+  digitalWrite(2, HIGH);
 }
