@@ -3,13 +3,13 @@
 
 #### Code:
 
-bruh.ino - updated script (11/5)
+bruh.ino - cleaned the code (2019-11-06)
 
-bruhbackup.ino - old script (10/27)
+bruhbackup.ino - old script (2019-10-27)
 
-bruhSlave.ino - updated slave script for second arduino (11/5)
+bruhSlave.ino - updated slave script for second arduino (2019-11-05)
 
-nah.ino - old script (11/1)
+nah.ino - old script (2019-11-01)
 
 
 
