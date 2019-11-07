@@ -1,11 +1,14 @@
-#define fori(i, n) for(int i = 0; i < n; ++i)
-#define IN(i, l, r) (l < i && i < r)
-#define LINR(i, l, r) (l <= i && i <= r)
-#define elif else if
+// MACROS
+#define fori(i, n) for(int i = 0; i < n; ++i)                                         // for loop
+#define IN(i, l, r) (l < i && i < r)                                                  // check if the value is within the given range (exclusive)
+#define LINR(i, l, r) (l <= i && i <= r)                                              // check if the value is within the given range (inclusive)
+#define elif else if                                                                  // else if but in python
+
+// IMPORTS
 #include <Servo.h>
 #include <Wire.h>
 
-//User configuration:
+// USER CONFIG:
 int percent = 0;                                                                      // between -100 and 100, indicates how fast the motor 
                                                                                       // will be moving when the arduino boots
 int pins[] = {9, 10, 11, 3, 5, 6, 100};                                               // the signal output pins (as many as you'd like)
