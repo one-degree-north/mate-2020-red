@@ -30,22 +30,7 @@ void setup() {
 
 
 void loop() {
-<<<<<<< HEAD
-  fori (i, arraySize) {
-    if (pins[i] < 7){
-      controllers[i].writeMicroseconds(percentages[i] * 14 + 800);
-    }/*else if(pins[i] == 100){
-      Wire.beginTransmission(8); // transmit to device #8
-      Wire.write(percentages[i] * 10 + 1000);              // sends one byte
-      Wire.endTransmission();    // stop transmitting
-    }*/
-    else{
-      controllers[i].writeMicroseconds(percentages[i] * 10 + 1000);
-    }
-  }
-=======
-  writeMcs();
->>>>>>> acf59398d96e901406aaa6ea330b37faa7b2b183
+  writeMicrocontrollers();
   if (Serial.available() > 1) {
     int controlValue = Serial.read() - '0';
     int inputValue = Serial.parseInt();
@@ -53,35 +38,17 @@ void loop() {
     Serial.print("RECEIVED INSTRUCTIONS FOR ");
     Serial.println(controlValue);
     Serial.println(inputValue);
+    
     if (inputValue == 50) {
       Serial.println("STOPPING");
       percentages[controlValue] = 50;
-<<<<<<< HEAD
-      if(controlValue == 6){
-        Wire.beginTransmission(8); // transmit to device #8
-        Wire.write((byte) floor((percentages[6] * 10 + 1000) / 64));
-        Wire.write((percentages[6] * 10 + 1000) - ((byte) floor((percentages[6] * 10 + 1000) / 64) * 64));
-        Wire.endTransmission();    // stop transmitting
-      }
-    } else if (LINR(inputValue, 0, 100)) {
-=======
-    } elif (LINR(inputValue, 0, 100)) {
->>>>>>> acf59398d96e901406aaa6ea330b37faa7b2b183
-      percentages[controlValue] = inputValue;
-      Serial.print("SET VALUE TO ");
-      Serial.print(percentages[controlValue]);
-      Serial.println("%");
-      if(controlValue == 6){
-        Wire.beginTransmission(8); // transmit to device #8
-        Wire.write((byte) floor((percentages[6] * 10 + 1000) / 64));
-        Wire.write((percentages[6] * 10 + 1000) - ((byte) floor((percentages[6] * 10 + 1000) / 64) * 64));
-        Wire.endTransmission();    // stop transmitting
-      }
-      /*fori (i, sizeof(percentages)){
-        Serial.println(percentages[i]);
-      }*/
-    } else {
-      Serial.println("INVALID VALUE");
+    } 
+    elif (LINR(inputValue, 0, 100)) {
+      setControlValues(controlValue, inputValue);
+    }
+    else Serial.println("INVALID VALUE");
+    if(LINR(inputValue, 0, 100) && controlValue == 6) {
+      writeWires();
     }
   }
 }
@@ -104,21 +71,28 @@ void attachPins() {
   cservo.attach(servopin);
 }
 
-void writeMcs() {
+void writeMicrocontrollers() {
   fori(i, arraySize) {
-    if(pins[i] < 7) {
-      controllers.writeMicroseconds(percentages[i] * 14 + 800);
-    } elif (pins[i] == 100) {
-      Wire.beginTransmission(8);
-      Wire.write(percentages[i] * 10 + 1000);
-      Wire.endTransmission();
-    } else {
-      controllers[i].writeMicroseconds(percentages[i] * 10 + 1000);
-    }
+    if(pins[i] < 7) controllers.writeMicroseconds(percentages[i] * 14 + 800); 
+    else controllers[i].writeMicroseconds(percentages[i] * 10 + 1000);
   }
 }
 
-pinOtherArduino() {
+void pinOtherArduino() {
   pinMode(2, OUTPUT);
   digitalWrite(2, HIGH);
+}
+
+void setControlValues(int cv, int iv) {
+  percentages[cv] = iv;
+  Serial.print("SET VALUE TO: ");
+  Serial.print(percentages[cv]);
+  Serial.println("%");
+}
+
+void writeWires() {
+  Wire.beginTransmission(8);
+  Wire.write((byte)floor((percentages[6] * 10 + 1000) / 64));
+  Wire.write((percentages[6] * 10 + 1000) - ((byte) floor((percentages[6] * 10 + 1000)/64)*64));
+  Wire.endTransmission();
 }
