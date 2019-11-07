@@ -12,7 +12,7 @@ int servopin = 9;
 int percentages[] = {50, 50, 50, 50, 50, 50, 50};
 
 
-const int arraySize = sizeof(pins)/sizeof(int);
+const int arraySize = sizeof(pins)/sizeof(byte);
 Servo controllers[arraySize];
 Servo cservo;
 float loopIndex = 1500;
@@ -43,11 +43,11 @@ void loop() {
   fori (i, arraySize) {
     if (pins[i] < 7){
       controllers[i].writeMicroseconds(percentages[i] * 14 + 800);
-    }else if(pins[i] == 100){
+    }/*else if(pins[i] == 100){
       Wire.beginTransmission(8); // transmit to device #8
       Wire.write(percentages[i] * 10 + 1000);              // sends one byte
       Wire.endTransmission();    // stop transmitting
-    }
+    }*/
     else{
       controllers[i].writeMicroseconds(percentages[i] * 10 + 1000);
     }
@@ -62,14 +62,26 @@ void loop() {
     if (inputValue == 50) {
       Serial.println("STOPPING");
       percentages[controlValue] = 50;
+      if(controlValue == 6){
+        Wire.beginTransmission(8); // transmit to device #8
+        Wire.write((byte) floor((percentages[6] * 10 + 1000) / 64));
+        Wire.write((percentages[6] * 10 + 1000) - ((byte) floor((percentages[6] * 10 + 1000) / 64) * 64));
+        Wire.endTransmission();    // stop transmitting
+      }
     } else if (LINR(inputValue, 0, 100)) {
       percentages[controlValue] = inputValue;
       Serial.print("SET VALUE TO ");
       Serial.print(percentages[controlValue]);
       Serial.println("%");
-      fori (i, sizeof(percentages)){
-        Serial.println(percentages[i]);
+      if(controlValue == 6){
+        Wire.beginTransmission(8); // transmit to device #8
+        Wire.write((byte) floor((percentages[6] * 10 + 1000) / 64));
+        Wire.write((percentages[6] * 10 + 1000) - ((byte) floor((percentages[6] * 10 + 1000) / 64) * 64));
+        Wire.endTransmission();    // stop transmitting
       }
+      /*fori (i, sizeof(percentages)){
+        Serial.println(percentages[i]);
+      }*/
     } else {
       Serial.println("INVALID VALUE");
     }

@@ -2,7 +2,7 @@
 #include <Servo.h>
 
 Servo cservo;
-int servoSpeed;
+int servoSpeed = 1500;
 
 void setup() {
   Wire.begin(8);                // join i2c bus with address #8
@@ -16,7 +16,7 @@ void setup() {
 
 void loop() {
   int v = digitalRead(5);
-  Serial.println(v);
+  //Serial.println(v);
   digitalWrite(2, v);
   delay(0.1);
   cservo.writeMicroseconds(servoSpeed);
@@ -28,11 +28,11 @@ void receiveEvent(int howMany) {
   int index = howMany;
   int val = 0;
   while (0 < Wire.available()) { // loop through all but the last
-    int x = Wire.read(); // receive byte as a char
+    byte x = Wire.read(); // receive byte as a char
     Serial.println(x);         // print the char
-    val += x * pow(10, index-1);
+    val += x * pow(64, index-1);
     index --;
     Serial.println(val);
-    servoSpeed = val;
+    servoSpeed = val + 1;
   }
 }
