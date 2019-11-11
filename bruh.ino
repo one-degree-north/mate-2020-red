@@ -1,5 +1,6 @@
 // MACROS
 #define fori(i, n) for(int i = 0; i < n; ++i)                                         // for loop
+#define foris(i, a, n) for(int i = a; i < n; ++i)                                     // for loop, specific
 #define IN(i, l, r) (l < i && i < r)                                                  // check if the value is within the given range (exclusive)
 #define LINR(i, l, r) (l <= i && i <= r)                                              // check if the value is within the given range (inclusive)
 #define elif else if                                                                  // else if but in python
