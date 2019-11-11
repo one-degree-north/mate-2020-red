@@ -3,7 +3,7 @@
 
 #### Code:
 
-bruh.ino - cleaned the code (2019-11-06)
+bruh.ino - cleaned the code (2019-11-11)
 
 bruhbackup.ino - old script (2019-10-27)
 
