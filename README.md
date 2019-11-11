@@ -23,6 +23,8 @@ Wire.h
 
 #### Hardware:
 
+Main - Sparkfun RedBoard Turbo
+
 Master - Arduino Uno SMD Edition
 
 Slave - Arduion Uno SMD Edition
