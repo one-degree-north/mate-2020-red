@@ -20,10 +20,18 @@ int percentages[] = {50, 50, 50, 50, 50, 50, 50};                               
 
 const int arraySize = sizeof(pins)/sizeof(byte);                                      // the amount of pins
 Servo controllers[arraySize];                                                         // create an array of servos
+const int pin = 6;
+Servo ESC;
 
 void setup() {
   initializeProgram();                                                                // initializes program -- prints
   attachPins();                                                                       // attaches all the pins
+  setPwmFrequency(pin, 64); // force pwm at 500Hz
+  ESC.attach(pin,1000,2000); // (pin, min pulse width, max pulse width in microseconds) 
+  delay(200); // wait
+  ESC.writeMicroseconds(1800); // throttle init
+  delay(200); // wait
+  ESC.writeMicroseconds(1500); // stop
   delay(1000);                                                                        // delay for 1 second
   Serial.println("INPUT PERCENTAGE");                                                 // request user input without receiving user input yet
   pinOtherArduino();                                                                  // pins the slave arduino
@@ -96,4 +104,35 @@ void writeWires() {                                                             
   Wire.write((byte)floor((percentages[6] * 10 + 1000) / 64));
   Wire.write((percentages[6] * 10 + 1000) - ((byte) floor((percentages[6] * 10 + 1000)/64)*64));
   Wire.endTransmission();
+}
+
+void setPwmFrequency(int pin, int divisor) {
+  byte mode;
+  if(pin == 5 || pin == 6 || pin == 9 || pin == 10) {
+    switch(divisor) {
+      case 1: mode = 0x01; break;
+      case 8: mode = 0x02; break;
+      case 64: mode = 0x03; break;
+      case 256: mode = 0x04; break;
+      case 1024: mode = 0x05; break;
+      default: return;
+    }
+    if(pin == 5 || pin == 6) {
+      TCCR0B = TCCR0B & 0b11111000 | mode;
+    } else {
+      TCCR1B = TCCR1B & 0b11111000 | mode;
+    }
+  } else if(pin == 3 || pin == 11) {
+    switch(divisor) {
+      case 1: mode = 0x01; break;
+      case 8: mode = 0x02; break;
+      case 32: mode = 0x03; break;
+      case 64: mode = 0x04; break;
+      case 128: mode = 0x05; break;
+      case 256: mode = 0x06; break;
+      case 1024: mode = 0x07; break;
+      default: return;
+    }
+    TCCR2B = TCCR2B & 0b11111000 | mode;
+  }
 }
