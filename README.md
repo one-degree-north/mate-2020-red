@@ -3,6 +3,8 @@
 
 #### Code:
 
+bruh_main.ino - main codebase, controller support with motors and servos (2019-12-10)
+
 bruh.ino - cleaned the code (2019-11-11)
 
 bruhbackup.ino - old script (2019-10-27)
@@ -23,7 +25,9 @@ Wire.h
 
 #### Hardware:
 
-Main - Sparkfun RedBoard Turbo
+Main - Arduino Mega
+
+USB Host - USB Host Shield Keyes
 
 Master - Arduino Uno SMD Edition
 
