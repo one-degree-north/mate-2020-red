@@ -27,6 +27,10 @@ XBOXONE Xbox(&Usb);
 #define TRIGGERMIN 0
 #define ESCMIN 1000
 #define ESCMAX 2000
+#define JOYSTICKMAX 32767
+#define JOYSTICKMIN -32768
+#define WPMAX 0 // TODO: update
+#define WPMIN 0 // TODO: update
 
 Servo ESC;
 Servo WP;
