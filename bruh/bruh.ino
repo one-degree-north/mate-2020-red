@@ -125,10 +125,14 @@ void secondAttachAndPin() {
 }
 
 void leftJoystick() {
-  if (Xbox.getAnalogHat(LeftHatY) > 4000 || Xbox.getAnalogHat(LeftHatY) < -4000) {
-    Serial.print(F("LeftHatY: "));
-    Serial.print(Xbox.getAnalogHat(LeftHatY));
-    double lhy = Xbox.getAnalogHat(LeftHatY);
+  // TODO: When the left servo arrives
+}
+
+void rightJoystick() {
+  if (Xbox.getAnalogHat(RightHatY) > 4000 || Xbox.getAnalogHat(RightHatY) < -4000) {
+    Serial.print(F("RightHatY: "));
+    Serial.print(Xbox.getAnalogHat(RightHatY));
+    double lhy = Xbox.getAnalogHat(RightHatY);
     if (lhy > 0){
       lhy -= 3999;
     } else {
@@ -141,12 +145,8 @@ void leftJoystick() {
     Serial.print(b);
     WP.writeMicroseconds(b);
   } else {
-    Serial.print("no LeftHatY, resetting to 1520   ");
+    Serial.print("no RightHatY, resetting to 1520   ");
     WP.writeMicroseconds(1500);
-}
-
-void rightJoystick() {
-  
 }
 
 void rightTrigger() {
