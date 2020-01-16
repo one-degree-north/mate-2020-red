@@ -23,6 +23,7 @@ XBOXONE Xbox(&Usb);
 #define ESCPIN 6
 #define WPPIN 5
 
+// CONSTANTS
 #define TRIGGERMAX 1023
 #define TRIGGERMIN 0
 #define ESCMIN 1000
@@ -131,12 +132,11 @@ void rightJoystick() {
   if (Xbox.getAnalogHat(RightHatY) > 4000 || Xbox.getAnalogHat(RightHatY) < -4000) {
     Serial.print(F("RightHatY: "));
     Serial.print(Xbox.getAnalogHat(RightHatY));
-    double y = (double) ((double) 1160 / (double) 65534);
-    double b = (double) (Xbox.getAnalogHat(RightHatY)) * y;
-    b += 1520;
+    double inp = Xbox.getAnalogHat(RightHatY));
+    double ret = map(inp, JOYSTICKMIN, JOYSTICKMAX, WPMIN, WPMAX);
     Serial.print(", output: ");
-    Serial.print(b);
-    WP.writeMicroseconds(b);
+    Serial.print(ret);
+    WP.writeMicroseconds(ret);
     } else {
       Serial.print("no RightHatY, resetting to 1520   ");
       WP.writeMicroseconds(1520);
