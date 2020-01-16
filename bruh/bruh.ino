@@ -31,11 +31,6 @@ XBOXONE Xbox(&Usb);
 Servo ESC;
 Servo WP;
 
-void leftJoystick();
-void rightJoystick();
-void rightTrigger();
-void leftTrigger();
-
 void setup() { 
   attachAndPin();
   serialConnect();
@@ -52,7 +47,7 @@ void setup() {
 void loop() {
   Usb.Task();
   if (Xbox.XboxOneConnected) {
-    leftJoystick();
+    rightJoystick();
     Serial.print("       ");
     rightTrigger();
   }
@@ -132,21 +127,16 @@ void rightJoystick() {
   if (Xbox.getAnalogHat(RightHatY) > 4000 || Xbox.getAnalogHat(RightHatY) < -4000) {
     Serial.print(F("RightHatY: "));
     Serial.print(Xbox.getAnalogHat(RightHatY));
-    double lhy = Xbox.getAnalogHat(RightHatY);
-    if (lhy > 0){
-      lhy -= 3999;
-    } else {
-      lhy += 3999;
-    }
-    double y = (double) ((double) 1160 / (double) 57536);
-    double b = (double) (lhy * y);
-    b += 1500;
+    double y = (double) ((double) 1160 / (double) 65534);
+    double b = (double) (Xbox.getAnalogHat(RightHatY)) * y;
+    b += 1520;
     Serial.print(", output: ");
     Serial.print(b);
     WP.writeMicroseconds(b);
-  } else {
-    Serial.print("no RightHatY, resetting to 1520   ");
-    WP.writeMicroseconds(1500);
+    } else {
+      Serial.print("no RightHatY, resetting to 1520   ");
+      WP.writeMicroseconds(1520);
+  }
 }
 
 void rightTrigger() {
