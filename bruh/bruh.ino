@@ -30,8 +30,10 @@ XBOXONE Xbox(&Usb);
 #define ESCMAX 2000
 #define JOYSTICKMAX 32767
 #define JOYSTICKMIN -32768
-#define WPMAX 0 // TODO: update
-#define WPMIN 0 // TODO: update
+#define WPMAX 1000 // TODO: update to accurately reflect max
+#define WPMIN 2000 // TODO: update to accurately reflect min
+#define TRIGGERDEADZONE 10
+#define JOYSTICKDEADZONE 4000
 
 Servo ESC;
 Servo WP;
@@ -129,11 +131,17 @@ void leftJoystick() {
 }
 
 void rightJoystick() {
-  if (Xbox.getAnalogHat(RightHatY) > 4000 || Xbox.getAnalogHat(RightHatY) < -4000) {
+  if (Xbox.getAnalogHat(RightHatY) > JOYSTICKDEADZONE || Xbox.getAnalogHat(RightHatY) < -JOYSTICKDEADZONE) {
     Serial.print(F("RightHatY: "));
     Serial.print(Xbox.getAnalogHat(RightHatY));
-    double inp = Xbox.getAnalogHat(RightHatY));
-    double ret = map(inp, JOYSTICKMIN, JOYSTICKMAX, WPMIN, WPMAX);
+    double inp = Xbox.getAnalogHat(RightHatY);
+    double ret;
+    if (Xbox.getAnalogHat(RightHatY) > 0) {
+      ret = map(inp, JOYSTICKDEADZONE, JOYSTICKMAX, WPMIN, WPMAX);
+    }
+    else {
+      ret = map(inp, JOYSTICKMIN, JOYSTICKDEADZONE, WPMIN, WPMAX);
+    }
     Serial.print(", output: ");
     Serial.print(ret);
     WP.writeMicroseconds(ret);
@@ -144,9 +152,9 @@ void rightJoystick() {
 }
 
 void rightTrigger() {
-  if(Xbox.getButtonPress(R2) > 20) {
+  if(Xbox.getButtonPress(R2) > TRIGGERDEADZONE) {
     double inp = Xbox.getButtonPress(R2);
-    double ret = map(inp, TRIGGERMIN, TRIGGERMAX, ESCMIN, ESCMAX);
+    double ret = map(inp, TRIGGERDEADZONE, TRIGGERMAX, ESCMIN, ESCMAX);
     Serial.print(", output: ");
     Serial.print(ret);
     ESC.writeMicroseconds(ret);
