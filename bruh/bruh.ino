@@ -23,8 +23,18 @@ XBOXONE Xbox(&Usb);
 #define ESCPIN 6
 #define WPPIN 5
 
+#define TRIGGERMAX 1023
+#define TRIGGERMIN 0
+#define ESCMIN 1000
+#define ESCMAX 2000
+
 Servo ESC;
 Servo WP;
+
+void leftJoystick();
+void rightJoystick();
+void rightTrigger();
+void leftTrigger();
 
 void setup() { 
   attachAndPin();
@@ -44,7 +54,7 @@ void loop() {
   if (Xbox.XboxOneConnected) {
     leftJoystick();
     Serial.print("       ");
-    rightJoystick();
+    rightTrigger();
   }
   delay(12);
 }
@@ -136,33 +146,27 @@ void leftJoystick() {
 }
 
 void rightJoystick() {
-  if (Xbox.getAnalogHat(RightHatY)> 4000 || Xbox.getAnalogHat(RightHatY) < -4000) {
-    Serial.print(F("RightHatY: "));
-    Serial.print(Xbox.getAnalogHat(RightHatY));
-    double rhy = Xbox.getAnalogHat(RightHatY);
-    if (rhy > 0){
-      rhy -= 3999;
-    } else {
-      rhy += 3999;
-    }
-    double t = (double) ((double) 1000 / (double) 57536);
-    double v = (double) (rhy * t);
-    v += 1500;
+  
+}
+
+void rightTrigger() {
+  if(Xbox.getButtonPress(R2) > 20) {
+    double inp = Xbox.getButtonPress(R2);
+    double ret = map(inp, TRIGGERMIN, TRIGGERMAX, ESCMIN, ESCMAX);
     Serial.print(", output: ");
-    Serial.print(v);
-    ESC.writeMicroseconds(v);
+    Serial.print(ret);
+    ESC.writeMicroseconds(ret);
+    // TODO: Bumper to make value negative
   }
   else {
-    Serial.print("no RightHatY, resetting to 1500   ");
+    Serial.print("no R2 Trigger, resetting to 1500");
     ESC.writeMicroseconds(1500);
   }
   Serial.println();
 }
 
-void rightTrigger() {
-  
-}
-
 void leftTrigger() {
-  
+  if(Xbox.getButtonPress(L2) > 20) {
+    // TODO: When the left motor arrives
+  }
 }
