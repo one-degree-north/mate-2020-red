@@ -30,19 +30,21 @@ XBOXONE Xbox(&Usb);
 #define RIGHTMOTORPIN 6
 #define RIGHTSERVOPIN 5
 
-// CONSTANTS
+// CONTROLLER CONSTANTS
 #define TRIGGERMAX 1023
 #define TRIGGERMIN 0
+#define JOYSTICKMAX 32767
+#define JOYSTICKMIN -32768
+#define TRIGGERDEADZONE 10
+#define JOYSTICKDEADZONE 4000
+
+// MOTOR AND SERVO CONSTANTS
 #define ESCMIN 1000
 #define ESCMID 1500 // TODO: verify that this value accurately reflects motor mid
 #define ESCMAX 2000
-#define JOYSTICKMAX 32767
-#define JOYSTICKMIN -32768
 #define WPMAX 1000 // TODO: update to accurately reflect max
 #define WPMID 1520 // TODO: update to accurately reflect mid
 #define WPMIN 2000 // TODO: update to accurately reflect min
-#define TRIGGERDEADZONE 10
-#define JOYSTICKDEADZONE 4000
 
 Servo RIGHTMOTOR;
 Servo RIGHTSERVO;
