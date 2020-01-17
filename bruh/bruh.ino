@@ -27,8 +27,12 @@ XBOXONE Xbox(&Usb);
 #define MAX_RESET 7 //MAX3421E pin 12
 #define MAX_GPX   8 //MAX3421E pin 17
 
+
+// PIN CONSTANTS
 #define RIGHTMOTORPIN 6
 #define RIGHTSERVOPIN 5
+// #define LEFTMOTORPIN value
+// #define LEFTSERVOPIN value
 
 // CONTROLLER CONSTANTS
 #define TRIGGERMAX 1023
