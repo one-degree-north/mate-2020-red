@@ -3,15 +3,9 @@
 
 #### Code:
 
-bruh_main.ino - main codebase, controller support with motors and servos (2019-12-10)
+bruh/bruh.ino -- Main code with controller configuration
 
-bruh.ino - cleaned the code (2019-11-11)
-
-bruhbackup.ino - old script (2019-10-27)
-
-bruhSlave.ino - updated slave script for second arduino (2019-11-05)
-
-nah.ino - old script (2019-11-01)
+Everything else -- practically useless
 
 
 
@@ -31,6 +25,6 @@ Main - Arduino Mega
 
 USB Host - USB Host Shield Keyes
 
-Master - Arduino Uno SMD Edition
+Master - Arduino Uno SMD Edition (not in use as of 2020)
 
-Slave - Arduion Uno SMD Edition
+Slave - Arduion Uno SMD Edition (not in use as of 2020)
