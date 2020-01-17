@@ -1,6 +1,13 @@
+/** 
+ *  Current controller configuration:
+ *  Right Joystick    --> Right Servo
+ *  Right Trigger     --> Right Motor
+ *  Left Joystick     --> Left Servo (incomplete, need actual servo)
+ *  Left Trigger      --> Left Motor (incomplete, need actual motor)
+ */
+
 /**
- * TODO: Map XBOX triggers to motors (triggers 0-1023)
- * TODO: Map XBOX joysticks to servos
+ * TODO: Debug right servo not working with right joystick
  * TODO: Map horizontal movement of joysticks to act as modifier for strength of motors
  */
 
@@ -61,6 +68,9 @@ void loop() {
     rightJoystick();
     Serial.print("       ");
     rightTrigger();
+    // leftJoystick();
+    // leftTrigger();
+    // TODO: format whatever correctly
   }
   delay(12);
 }
