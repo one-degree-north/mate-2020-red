@@ -20,29 +20,33 @@ XBOXONE Xbox(&Usb);
 #define MAX_RESET 7 //MAX3421E pin 12
 #define MAX_GPX   8 //MAX3421E pin 17
 
-#define ESCPIN 6
-#define WPPIN 5
+#define RIGHTMOTORPIN 6
+#define RIGHTSERVOPIN 5
 
 // CONSTANTS
 #define TRIGGERMAX 1023
 #define TRIGGERMIN 0
 #define ESCMIN 1000
+#define ESCMID 1500 // TODO: verify that this value accurately reflects motor mid
 #define ESCMAX 2000
 #define JOYSTICKMAX 32767
 #define JOYSTICKMIN -32768
 #define WPMAX 1000 // TODO: update to accurately reflect max
+#define WPMID 1520 // TODO: update to accurately reflect mid
 #define WPMIN 2000 // TODO: update to accurately reflect min
 #define TRIGGERDEADZONE 10
 #define JOYSTICKDEADZONE 4000
 
-Servo ESC;
-Servo WP;
+Servo RIGHTMOTOR;
+Servo RIGHTSERVO;
+Servo LEFTMOTOR;
+Servo LEFTSERVO;
 
 void setup() { 
   attachAndPin();
   serialConnect();
-  setPwmFrequency(ESCPIN, 64); // force pwm at 500Hz
-  setPwmFrequency(WPPIN, 64);
+  setPwmFrequency(RIGHTMOTORPIN, 64); // force pwm at 500Hz
+  setPwmFrequency(RIGHTSERVOPIN, 64);
   Serial.println("WP init done");
   Serial.println("starting 7.5s stop test      |");
     for(int i = 0; i < 30; ++i) {
@@ -93,8 +97,8 @@ void setPwmFrequency(int pin, int divisor) {
 }
 
 void attachAndPin() {
-  ESC.attach(ESCPIN);
-  WP.attach(WPPIN);
+  RIGHTMOTOR.attach(RIGHTMOTORPIN);
+  RIGHTSERVO.attach(RIGHTSERVOPIN);
   pinMode(MAX_GPX, INPUT);
   pinMode(MAX_RESET, OUTPUT); 
   digitalWrite(MAX_RESET, LOW); 
@@ -114,40 +118,50 @@ void serialConnect() {
 }
 
 void secondAttachAndPin() {
-  ESC.attach(ESCPIN,1000,2000); // (pin, min pulse width, max pulse width in microseconds) 
+  RIGHTMOTOR.attach(RIGHTMOTORPIN,1000,2000); // (pin, min pulse width, max pulse width in microseconds) 
   delay(200); // wait
-  ESC.writeMicroseconds(1800); // throttle init
+  RIGHTMOTOR.writeMicroseconds(1800); // throttle init
   delay(200); // wait
-  ESC.writeMicroseconds(1500); // stop
+  RIGHTMOTOR.writeMicroseconds(1500); // stop
   Serial.println("ESC init done");
-  WP.attach(WPPIN,900,2100);
-  WP.writeMicroseconds(1500);
+  RIGHTSERVO.attach(RIGHTSERVOPIN,900,2100);
+  RIGHTSERVO.writeMicroseconds(1500);
   delay(200);
-  WP.writeMicroseconds(1500);
+  RIGHTSERVO.writeMicroseconds(1500);
 }
 
 void leftJoystick() {
   // TODO: When the left servo arrives
+  if (Xbox.getAnalogHat(LeftHatY) > JOYSTICKDEADZONE || Xbox.getAnalogHat(LeftHatY) -JOYSTICKDEADZONE) {
+    Serial.print("LeftHatY: ");
+    double inp = Xbox.getAnalogHat(LeftHatY);
+    Serial.print(inp);
+    double ret;
+    if (Xbox.getAnalogHat(LeftHatY) > 0) ret = map(inp, JOYSTICKDEADZONE, JOYSTICKMAX, WPMID, WPMAX);
+    else                                 ret = map(inp, JOYSTICKMIN, -JOYSTICKDEADZONE, WPMIN, WPMID);
+    Serial.print(", output: ");
+    Serial.print(ret);
+    // TODO: Write LEFTSERVO
+  } else {
+    Serial.print("no LeftHatY, resetting to 1520   ");
+    // TODO: Write LEFTSERVO
+  }
 }
 
 void rightJoystick() {
   if (Xbox.getAnalogHat(RightHatY) > JOYSTICKDEADZONE || Xbox.getAnalogHat(RightHatY) < -JOYSTICKDEADZONE) {
     Serial.print(F("RightHatY: "));
-    Serial.print(Xbox.getAnalogHat(RightHatY));
     double inp = Xbox.getAnalogHat(RightHatY);
+    Serial.print(inp);
     double ret;
-    if (Xbox.getAnalogHat(RightHatY) > 0) {
-      ret = map(inp, JOYSTICKDEADZONE, JOYSTICKMAX, WPMIN, WPMAX);
-    }
-    else {
-      ret = map(inp, JOYSTICKMIN, JOYSTICKDEADZONE, WPMIN, WPMAX);
-    }
+    if (Xbox.getAnalogHat(RightHatY) > 0) ret = map(inp, JOYSTICKDEADZONE, JOYSTICKMAX, WPMID, WPMAX);
+    else                                  ret = map(inp, JOYSTICKMIN, -JOYSTICKDEADZONE, WPMIN, WPMID);
     Serial.print(", output: ");
     Serial.print(ret);
-    WP.writeMicroseconds(ret);
+    RIGHTSERVO.writeMicroseconds(ret);
     } else {
       Serial.print("no RightHatY, resetting to 1520   ");
-      WP.writeMicroseconds(1520);
+      RIGHTSERVO.writeMicroseconds(1520);
   }
 }
 
@@ -155,20 +169,34 @@ void rightTrigger() {
   if(Xbox.getButtonPress(R2) > TRIGGERDEADZONE) {
     double inp = Xbox.getButtonPress(R2);
     double ret = map(inp, TRIGGERDEADZONE, TRIGGERMAX, ESCMIN, ESCMAX);
+    Serial.print("R2Trigger: ");
+    Serial.print(inp);
     Serial.print(", output: ");
     Serial.print(ret);
-    ESC.writeMicroseconds(ret);
+    RIGHTMOTOR.writeMicroseconds(ret);
     // TODO: Bumper to make value negative
   }
   else {
     Serial.print("no R2 Trigger, resetting to 1500");
-    ESC.writeMicroseconds(1500);
+    RIGHTMOTOR.writeMicroseconds(1500);
   }
   Serial.println();
 }
 
 void leftTrigger() {
-  if(Xbox.getButtonPress(L2) > 20) {
+  if(Xbox.getButtonPress(L2) > TRIGGERDEADZONE) {
     // TODO: When the left motor arrives
+    double inp = Xbox.getButtonPress(R2);
+    double ret = map(inp, TRIGGERDEADZONE, TRIGGERMAX, ESCMIN, ESCMAX);
+    Serial.print("L2Trigger: ");
+    Serial.print(inp);
+    Serial.print(", output: ");
+    Serial.print(ret);
+    // TODO: Write LEFTMOTOR
+    // TODO: Bumper to make value negative
+  }
+  else {
+    Serial.print("no L2 Trigger, resetting to 1500");
+    // TODO: Write LEFTMOTOR
   }
 }
