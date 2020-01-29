@@ -15,6 +15,7 @@
 #include <Servo.h>
 #include <Wire.h>
 #include "ITG3200.h"
+#include <ADXL345.h>
 
 // Satisfy the IDE, which needs to see the include statment in the ino too.
 #ifdef dobogusinclude
@@ -25,6 +26,7 @@
 USB Usb;
 XBOXONE Xbox(&Usb);
 ITG3200 gyro;
+ADXL345 accel;
 
 //Revision 1.3 (DEV-09947)
 #define MAX_RESET 7 //MAX3421E pin 12
@@ -239,4 +241,52 @@ void printGyro(int x, int y, int z) {
   Serial.print(y);
   Serial.print(" ");
   Serial.println(z);
+}
+
+void initAccelerometer() {
+  accel.powerOn();
+  //set activity/ inactivity thresholds (0-255)
+  accel.setActivityThreshold(75); //62.5mg per increment
+  accel.setInactivityThreshold(75); //62.5mg per increment
+  accel.setTimeInactivity(10); // how many seconds of no activity is inactive?
+ 
+  //look of activity movement on this axes - 1 == on; 0 == off 
+  accel.setActivityX(1);
+  accel.setActivityY(1);
+  accel.setActivityZ(1);
+ 
+  //look of inactivity movement on this axes - 1 == on; 0 == off
+  accel.setInactivityX(1);
+  accel.setInactivityY(1);
+  accel.setInactivityZ(1);
+ 
+  //look of tap movement on this axes - 1 == on; 0 == off
+  accel.setTapDetectionOnX(0);
+  accel.setTapDetectionOnY(0);
+  accel.setTapDetectionOnZ(1);
+ 
+  //set values for what is a tap, and what is a double tap (0-255)
+  accel.setTapThreshold(50); //62.5mg per increment
+  accel.setTapDuration(15); //625us per increment
+  accel.setDoubleTapLatency(80); //1.25ms per increment
+  accel.setDoubleTapWindow(200); //1.25ms per increment
+ 
+  //set values for what is considered freefall (0-255)
+  accel.setFreeFallThreshold(7); //(5 - 9) recommended - 62.5mg per increment
+  accel.setFreeFallDuration(45); //(20 - 70) recommended - 5ms per increment
+ 
+  //setting all interrupts to take place on int pin 1
+  //I had issues with int pin 2, was unable to reset it
+  accel.setInterruptMapping( ADXL345_INT_SINGLE_TAP_BIT,   ADXL345_INT1_PIN );
+  accel.setInterruptMapping( ADXL345_INT_DOUBLE_TAP_BIT,   ADXL345_INT1_PIN );
+  accel.setInterruptMapping( ADXL345_INT_FREE_FALL_BIT,    ADXL345_INT1_PIN );
+  accel.setInterruptMapping( ADXL345_INT_ACTIVITY_BIT,     ADXL345_INT1_PIN );
+  accel.setInterruptMapping( ADXL345_INT_INACTIVITY_BIT,   ADXL345_INT1_PIN );
+ 
+  //register interrupt actions - 1 == on; 0 == off  
+  accel.setInterrupt( ADXL345_INT_SINGLE_TAP_BIT, 1);
+  accel.setInterrupt( ADXL345_INT_DOUBLE_TAP_BIT, 1);
+  accel.setInterrupt( ADXL345_INT_FREE_FALL_BIT,  1);
+  accel.setInterrupt( ADXL345_INT_ACTIVITY_BIT,   1);
+  accel.setInterrupt( ADXL345_INT_INACTIVITY_BIT, 1);
 }
