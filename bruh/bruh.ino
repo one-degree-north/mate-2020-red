@@ -13,6 +13,8 @@
 
 #include <XBOXONE.h>
 #include <Servo.h>
+#include <Wire.h>
+#include "ITG3200.h"
 
 // Satisfy the IDE, which needs to see the include statment in the ino too.
 #ifdef dobogusinclude
@@ -22,6 +24,7 @@
 
 USB Usb;
 XBOXONE Xbox(&Usb);
+ITG3200 gyro;
 
 //Revision 1.3 (DEV-09947)
 #define MAX_RESET 7 //MAX3421E pin 12
@@ -60,6 +63,7 @@ void setup() {
   serialConnect();
   setPwmFrequency(RIGHTMOTORPIN, 64); // force pwm at 500Hz
   setPwmFrequency(RIGHTSERVOPIN, 64);
+  initGyro();
   Serial.println("WP init done");
   Serial.println("starting 7.5s stop test      |");
     for(int i = 0; i < 30; ++i) {
@@ -74,6 +78,10 @@ void loop() {
     rightJoystick();
     Serial.print("       ");
     rightTrigger();
+    Serial.print("       ");
+    int16_t x, y, z;
+    gyro.getXYZ(&x, &y, &z);
+    printGyro(x, y, z);
     // leftJoystick();
     // leftTrigger();
     // TODO: format whatever correctly
@@ -215,4 +223,20 @@ void leftTrigger() {
     Serial.print("no L2 Trigger, resetting to 1500");
     // TODO: Write LEFTMOTOR
   }
+}
+
+void initGyro() {
+  gyro.init();
+  Serial.println("Calibrating Gyro");
+  gyro.zeroCalibrate(200, 10);
+  Serial.println("Gyro calibrated");
+}
+
+void printGyro(int x, int y, int z) {
+  Serial.print(" ");
+  Serial.print(x);
+  Serial.print(" ");
+  Serial.print(y);
+  Serial.print(" ");
+  Serial.println(z);
 }
