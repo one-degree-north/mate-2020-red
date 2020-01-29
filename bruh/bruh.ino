@@ -81,9 +81,9 @@ void loop() {
     Serial.print("       ");
     rightTrigger();
     Serial.print("       ");
-    int16_t x, y, z;
-    gyro.getXYZ(&x, &y, &z);
-    printGyro(x, y, z);
+    printGyro();
+    Serial.print("       ");
+    printAccel();
     // leftJoystick();
     // leftTrigger();
     // TODO: format whatever correctly
@@ -234,7 +234,9 @@ void initGyro() {
   Serial.println("Gyro calibrated");
 }
 
-void printGyro(int x, int y, int z) {
+void printGyro() {
+  int16_t x, y, z;
+  gyro.getXYZ(&x, &y, &z);
   Serial.print(" ");
   Serial.print(x);
   Serial.print(" ");
@@ -289,4 +291,15 @@ void initAccelerometer() {
   accel.setInterrupt( ADXL345_INT_FREE_FALL_BIT,  1);
   accel.setInterrupt( ADXL345_INT_ACTIVITY_BIT,   1);
   accel.setInterrupt( ADXL345_INT_INACTIVITY_BIT, 1);
+}
+
+void printAccel() {
+  double xyz[3];
+  accel.getAcceleration(xyz);
+  Serial.print("x-accel: ");
+  Serial.print(xyz[0]);
+  Serial.print("  y-accel: ");
+  Serial.print(xyz[1]);
+  Serial.print("  z-accel: ");
+  Serial.println("xyz[2]");
 }
