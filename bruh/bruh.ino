@@ -170,8 +170,8 @@ void rightJoystick() {
     double inp = Xbox.getAnalogHat(RightHatY);
     Serial.print(inp);
     double ret;
-    if (Xbox.getAnalogHat(RightHatY) > 0) ret = map(inp, JOYSTICKDEADZONE, JOYSTICKMAX, WPMID, WPMAX);
-    else                                  ret = map(inp, JOYSTICKMIN, -JOYSTICKDEADZONE, WPMIN, WPMID);
+    if (Xbox.getAnalogHat(RightHatY) > 0) ret = map(inp, JOYSTICKDEADZONE, JOYSTICKMAX, WPMID, WPMIN);
+    else                                  ret = map(inp, JOYSTICKMIN, -JOYSTICKDEADZONE, WPMAX, WPMID);
     Serial.print(", output: ");
     Serial.print(ret);
     RIGHTSERVO.writeMicroseconds(ret);
