@@ -11,19 +11,22 @@ Everything else -- practically useless
 
 #### Required Libraries:
 
+
 ##### Libaries that do not need to be installed
 
-Servo.h 
+Servo.h - **Servo**
 
-Wire.h
+Wire.h - **Wire**
+
 
 ##### Libaries that need to be installed:
 
-XBOXONE.h - USB Host Shield
+XBOXONE.h - **USB Host Shield**
 
-ADXL345.h - Accelerometer_ADXL345
+ADXL345.h - **Accelerometer_ADXL345**
 
-ITG3200.h - Grove - 3-Axis Digital Gyro lib
+ITG3200.h - Grove - **3-Axis Digital Gyro lib**
+
 
 #### Hardware:
 
