@@ -1,4 +1,4 @@
-/** 
+                                                                                                                                                                                        /** 
  *  Current controller configuration:
  *  Right Joystick    --> Right Servo
  *  Right Trigger     --> Right Motor
@@ -27,6 +27,10 @@ USB Usb;
 XBOXONE Xbox(&Usb);
 ITG3200 gyro;
 ADXL345 accel;
+Servo RIGHTMOTOR;
+Servo RIGHTSERVO;
+Servo LEFTMOTOR;
+Servo LEFTSERVO;
 
 //Revision 1.3 (DEV-09947)
 #define MAX_RESET 7 //MAX3421E pin 12
@@ -34,10 +38,10 @@ ADXL345 accel;
 
 
 // PIN CONSTANTS
-#define RIGHTMOTORPIN 6
-#define RIGHTSERVOPIN 5
-// #define LEFTMOTORPIN value
-// #define LEFTSERVOPIN value
+#define LEFTMOTORPIN 6
+#define LEFTSERVOPIN 5
+// #define RIGHTMOTORPIN value
+// #define RIGHTSERVOPIN value
 
 // CONTROLLER CONSTANTS
 #define TRIGGERMAX 1023
@@ -55,40 +59,38 @@ ADXL345 accel;
 #define WPMID 1520 // TODO: update to accurately reflect mid
 #define WPMIN 2000 // TODO: update to accurately reflect min
 
-Servo RIGHTMOTOR;
-Servo RIGHTSERVO;
-Servo LEFTMOTOR;
-Servo LEFTSERVO;
+
+// SETUP
 
 void setup() { 
   attachAndPin();
   serialConnect();
-  setPwmFrequency(RIGHTMOTORPIN, 64); // force pwm at 500Hz
-  setPwmFrequency(RIGHTSERVOPIN, 64);
+  setPwmFrequency(LEFTMOTORPIN, 64); // force pwm at 500Hz
+  setPwmFrequency(LEFTSERVOPIN, 64);
   initGyro();
-  Serial.println("WP init done");
-  Serial.println("starting 7.5s stop test      |");
-    for(int i = 0; i < 30; ++i) {
-    delay(250);
-    Serial.print("*");
-  }
-  Serial.println(" | program commencing");
+  secondAttachAndPin();
+  stopTest();
 }
-void loop() {
-  Usb.Task();
-  if (Xbox.XboxOneConnected) {
-    rightJoystick();
-    Serial.print("       ");
-    rightTrigger();
-    Serial.print("       ");
-    printGyro();
-    Serial.print("       ");
-    printAccel();
-    // leftJoystick();
-    // leftTrigger();
-    // TODO: format whatever correctly
+
+void attachAndPin() {
+  LEFTMOTOR.attach(LEFTMOTORPIN);
+  LEFTSERVO.attach(LEFTSERVOPIN);
+  pinMode(MAX_GPX, INPUT);
+  pinMode(MAX_RESET, OUTPUT); 
+  digitalWrite(MAX_RESET, LOW); 
+  delay(20); //wait 20ms 
+  digitalWrite(MAX_RESET, HIGH);
+  delay(20); //wait 20ms
+  Serial.begin(115200);
+}
+
+void serialConnect() {
+  while (!Serial); // Wait for serial port to connect - used on Leonardo, Teensy a/nd other boards with built-in USB CDC serial connection
+  if (Usb.Init() == -1) {
+    Serial.print(F("\r\nOSC did not start"));
+    while (1); //halt
   }
-  delay(12);
+  Serial.println(F("\r\nXBOX USB Library Started"));
 }
 
 void setPwmFrequency(int pin, int divisor) {
@@ -122,72 +124,102 @@ void setPwmFrequency(int pin, int divisor) {
   }
 }
 
-void attachAndPin() {
-  RIGHTMOTOR.attach(RIGHTMOTORPIN);
-  RIGHTSERVO.attach(RIGHTSERVOPIN);
-  pinMode(MAX_GPX, INPUT);
-  pinMode(MAX_RESET, OUTPUT); 
-  digitalWrite(MAX_RESET, LOW); 
-  delay(20); //wait 20ms 
-  digitalWrite(MAX_RESET, HIGH);
-  delay(20); //wait 20ms
-  Serial.begin(115200);
-}
-
-void serialConnect() {
-  while (!Serial); // Wait for serial port to connect - used on Leonardo, Teensy a/nd other boards with built-in USB CDC serial connection
-  if (Usb.Init() == -1) {
-    Serial.print(F("\r\nOSC did not start"));
-    while (1); //halt
-  }
-  Serial.print(F("\r\nXBOX USB Library Started"));
-}
-
 void secondAttachAndPin() {
-  RIGHTMOTOR.attach(RIGHTMOTORPIN,1000,2000); // (pin, min pulse width, max pulse width in microseconds) 
+  LEFTMOTOR.attach(LEFTMOTORPIN,1000,2000); // (pin, min pulse width, max pulse width in microseconds) 
   delay(200); // wait
-  RIGHTMOTOR.writeMicroseconds(1800); // throttle init
+  LEFTMOTOR.writeMicroseconds(1800); // throttle init
   delay(200); // wait
-  RIGHTMOTOR.writeMicroseconds(1500); // stop
-  Serial.println("ESC init done");
-  RIGHTSERVO.attach(RIGHTSERVOPIN,900,2100);
-  RIGHTSERVO.writeMicroseconds(1500);
+  LEFTMOTOR.writeMicroseconds(1500); // stop
+  Serial.println("LEFTMOTOR init done");
+  LEFTSERVO.attach(LEFTSERVOPIN,900,2100);
+  LEFTSERVO.writeMicroseconds(1500);
   delay(200);
-  RIGHTSERVO.writeMicroseconds(1500);
+  LEFTSERVO.writeMicroseconds(1500);
+  Serial.println("LEFTESC init done");
+}
+
+void initGyro() {
+  gyro.init();
+  Serial.println("Calibrating Gyro");
+  gyro.zeroCalibrate(200, 10);
+  Serial.println("Gyro calibrated");
+}
+
+void stopTest() {
+  Serial.println("starting 7.5s stop test      | |");
+  for(int i = 0; i < 30; ++i) {
+    delay(250);
+    Serial.print("*");
+  }
+  Serial.println(" | program commencing");
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Controlled phase
+
+void loop() {
+  Usb.Task();
+  if (Xbox.XboxOneConnected) {
+    leftJoystick();
+    Serial.print("\t\t\t");
+    leftTrigger();
+    Serial.println();
+  }
+  else {
+    Serial.println("ERROR: Controller not connected");
+  }
+  delay(12);
 }
 
 void leftJoystick() {
-  // TODO: When the left servo arrives
-  if (Xbox.getAnalogHat(LeftHatY) > JOYSTICKDEADZONE || Xbox.getAnalogHat(LeftHatY) -JOYSTICKDEADZONE) {
-    Serial.print("LeftHatY: ");
-    double inp = Xbox.getAnalogHat(LeftHatY);
-    Serial.print(inp);
-    double ret;
-    if (Xbox.getAnalogHat(LeftHatY) > 0) ret = map(inp, JOYSTICKDEADZONE, JOYSTICKMAX, WPMID, WPMAX);
-    else                                 ret = map(inp, JOYSTICKMIN, -JOYSTICKDEADZONE, WPMIN, WPMID);
-    Serial.print(", output: ");
-    Serial.print(ret);
-    // TODO: Write LEFTSERVO
-  } else {
-    Serial.print("no LeftHatY, resetting to 1520   ");
-    // TODO: Write LEFTSERVO
+  double joystick_input = Xbox.getAnalogHat(LeftHatY);
+  Serial.print("LeftHatY: ");
+  Serial.print(joystick_input);
+  
+  if (joystick_input > JOYSTICKDEADZONE || joystick_input < -1 * JOYSTICKDEADZONE) {
+    double power;
+    if(joystick_input > 0) power = map(joystick_input, JOYSTICKDEADZONE, JOYSTICKMAX, WPMID, WPMAX);
+    else                   power = map(joystick_input, JOYSTICKMIN, -1*JOYSTICKDEADZONE, WPMIN, WPMID);
+
+    Serial.print(",\t\toutput:");
+    Serial.print(power);
+
+    LEFTSERVO.writeMicroseconds(power);
+  }
+  else {
+    Serial.print("no output");
+    LEFTSERVO.writeMicroseconds(1520);
   }
 }
 
 void rightJoystick() {
-  if (Xbox.getAnalogHat(RightHatY) > JOYSTICKDEADZONE || Xbox.getAnalogHat(RightHatY) < -JOYSTICKDEADZONE) {
-    Serial.print(F("RightHatY: "));
-    double inp = Xbox.getAnalogHat(RightHatY);
-    Serial.print(inp);
-    double ret;
-    if (Xbox.getAnalogHat(RightHatY) > 0) ret = map(inp, JOYSTICKDEADZONE, JOYSTICKMAX, WPMID, WPMIN);
-    else                                  ret = map(inp, JOYSTICKMIN, -JOYSTICKDEADZONE, WPMAX, WPMID);
-    Serial.print(", output: ");
-    Serial.print(ret);
-    RIGHTSERVO.writeMicroseconds(ret);
-    } else {
-      Serial.print("no RightHatY, resetting to 1520   ");
-      RIGHTSERVO.writeMicroseconds(1520);
+  double joystick_input = Xbox.getAnalogHat(RightHatY);
+  Serial.print("RightHatY: ");
+  Serial.print(joystick_input);
+  if (joystick_input > JOYSTICKDEADZONE || joystick_input < -1 * JOYSTICKDEADZONE) {
+    double power;
+    if(joystick_input > 0) power = map(joystick_input, JOYSTICKDEADZONE, JOYSTICKMAX, WPMID, WPMAX);
+    else                   power = map(joystick_input, JOYSTICKMIN, -1*JOYSTICKDEADZONE, WPMIN, WPMID);
+
+    Serial.print(",\t\toutput:");
+    Serial.print(power);
+
+    // RIGHTSERVO.writeMicroseconds(power);
+  }
+  else {
+    Serial.print(", no output");
+    // RIGHTSERVO.writeMicroseconds(1520);
   }
 }
 
@@ -199,40 +231,36 @@ void rightTrigger() {
     Serial.print(inp);
     Serial.print(", output: ");
     Serial.print(ret);
-    RIGHTMOTOR.writeMicroseconds(ret);
+    // TODO: Write RIGHTMOTOR
     // TODO: Bumper to make value negative
   }
   else {
     Serial.print("no R2 Trigger, resetting to 1500");
-    RIGHTMOTOR.writeMicroseconds(1500);
+    // RIGHTMOTOR.writeMicroseconds(1500);
   }
   Serial.println();
 }
 
 void leftTrigger() {
-  if(Xbox.getButtonPress(L2) > TRIGGERDEADZONE) {
-    // TODO: When the left motor arrives
-    double inp = Xbox.getButtonPress(R2);
-    double ret = map(inp, TRIGGERDEADZONE, TRIGGERMAX, ESCMIN, ESCMAX);
-    Serial.print("L2Trigger: ");
-    Serial.print(inp);
-    Serial.print(", output: ");
-    Serial.print(ret);
-    // TODO: Write LEFTMOTOR
-    // TODO: Bumper to make value negative
+  double trigger_input = Xbox.getButtonPress(L2);
+  Serial.print("L2Trigger: ");
+  Serial.print(trigger_input);
+  if(trigger_input > TRIGGERDEADZONE) {
+    double power = map(trigger_input, TRIGGERDEADZONE, TRIGGERMAX, ESCMIN, ESCMAX);
+
+    LEFTMOTOR.writeMicroseconds(power);
+    //TODO: Bumper take make value negative
+
+    Serial.print(",\t\toutput: ");
+    Serial.print(power);
   }
   else {
-    Serial.print("no L2 Trigger, resetting to 1500");
-    // TODO: Write LEFTMOTOR
+    Serial.print(", no output");
+    LEFTMOTOR.writeMicroseconds(1500);
   }
 }
 
-void initGyro() {
-  gyro.init();
-  Serial.println("Calibrating Gyro");
-  gyro.zeroCalibrate(200, 10);
-  Serial.println("Gyro calibrated");
-}
+
 
 void printGyro() {
   int16_t x, y, z;
