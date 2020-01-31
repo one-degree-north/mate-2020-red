@@ -224,21 +224,20 @@ void rightJoystick() {
 }
 
 void rightTrigger() {
-  if(Xbox.getButtonPress(R2) > TRIGGERDEADZONE) {
-    double inp = Xbox.getButtonPress(R2);
-    double ret = map(inp, TRIGGERDEADZONE, TRIGGERMAX, ESCMIN, ESCMAX);
-    Serial.print("R2Trigger: ");
-    Serial.print(inp);
-    Serial.print(", output: ");
-    Serial.print(ret);
-    // TODO: Write RIGHTMOTOR
-    // TODO: Bumper to make value negative
+  double trigger_input = Xbox.getButtonPress(R2);
+  Serial.print("R2Trigger: ");
+  Serial.print(trigger_input);
+  if(trigger_input > TRIGGERDEADZONE) {
+    double power = map(trigger_input, TRIGGERDEADZONE, TRIGGERMAX, ESCMIN, ESCMAX);
+
+    // RIGHTMOTOR.writeMicroseconds(power);
+
+    Serial.print(",\t\toutput: ");
+    Serial.print(power);
   }
   else {
-    Serial.print("no R2 Trigger, resetting to 1500");
-    // RIGHTMOTOR.writeMicroseconds(1500);
+    Serial.print(", no output");
   }
-  Serial.println();
 }
 
 void leftTrigger() {
