@@ -15,6 +15,7 @@
  * TODO: Map horizontal movement of joysticks to act as modifier for strength of motors
  */
 
+// LIBRARY IMPORTS
 #include <XBOXONE.h>
 #include <Servo.h>
 #include <Wire.h>
@@ -225,7 +226,7 @@ void stopTest() {
 
 
 
-// Controlled phase
+// Driving phase
 
 void loop() {
   Usb.Task();
@@ -236,7 +237,7 @@ void loop() {
     Serial.println();
   }
   else {
-    Serial.println("ERROR: Controller not connected");
+    Serial.println("ERROR: Controller not connected\t\t\t");
   }
   printGyro();
   Serial.print("\t\t\t");
@@ -247,6 +248,44 @@ void loop() {
   delay(12);
 }
 
+
+
+/** Maps the right joystick to the right servo
+ *    The right joystick powers the right servo. This design choice was made because
+ *    the right joystick returns an analog value based on its position from its equilibrium,
+ *    which allows us to develop precision when driving the robot. Moving the analog stick
+ *    up moves the servo to tilt the motor in a way to push the robot down. Likewise,
+ *    moving the analog stick down tilts the motor in a way to push the robot up. This
+ *    mirrors the centre stick of a pilot.
+ */
+void rightJoystick() {
+  double joystick_input = Xbox.getAnalogHat(RightHatY);
+  Serial.print("RightHatY: ");
+  Serial.print(joystick_input);
+  if (joystick_input > JOYSTICKDEADZONE || joystick_input < -1 * JOYSTICKDEADZONE) {
+    double power;
+    if(joystick_input > 0) power = map(joystick_input, JOYSTICKDEADZONE, JOYSTICKMAX, WPMID, WPMAX);
+    else                   power = map(joystick_input, JOYSTICKMIN, -1*JOYSTICKDEADZONE, WPMIN, WPMID);
+
+    Serial.print(",\t\toutput:");
+    Serial.print(power);
+
+    // RIGHTSERVO.writeMicroseconds(power);
+  }
+  else {
+    Serial.print(", no output");
+    // RIGHTSERVO.writeMicroseconds(1520);
+  }
+}
+
+/** Maps the left joystick to the left servo
+ *    The left joystick controls the left servo. This design choice was made because
+ *    the left joystick returns an analog value based on its position from its equilibrium,
+ *    which allows us to develop precision when driving the robot. Moving the analog stick
+ *    up moves the servo to tilt the motor in a way to push the robot down. Likewise,
+ *    moving the analog stick down tilts the motor in a way to push the robot up. This
+ *    mirrors the centre stick of a pilot.
+ */
 void leftJoystick() {
   double joystick_input = Xbox.getAnalogHat(LeftHatY);
   Serial.print("LeftHatY: ");
@@ -268,26 +307,14 @@ void leftJoystick() {
   }
 }
 
-void rightJoystick() {
-  double joystick_input = Xbox.getAnalogHat(RightHatY);
-  Serial.print("RightHatY: ");
-  Serial.print(joystick_input);
-  if (joystick_input > JOYSTICKDEADZONE || joystick_input < -1 * JOYSTICKDEADZONE) {
-    double power;
-    if(joystick_input > 0) power = map(joystick_input, JOYSTICKDEADZONE, JOYSTICKMAX, WPMID, WPMAX);
-    else                   power = map(joystick_input, JOYSTICKMIN, -1*JOYSTICKDEADZONE, WPMIN, WPMID);
-
-    Serial.print(",\t\toutput:");
-    Serial.print(power);
-
-    // RIGHTSERVO.writeMicroseconds(power);
-  }
-  else {
-    Serial.print(", no output");
-    // RIGHTSERVO.writeMicroseconds(1520);
-  }
-}
-
+/** Maps the right trigger to the right motor
+ *    The right trigger powers the right motor. This design choice was made because
+ *    the right trigger returns an analog value based on how hard it is being pressed,
+ *    which allows us to develop precision while driving the robot. Pressing the left
+ *    bumper reverses the motor, allowing the robot to move backwards. However, the
+ *    driver must be careful, as incorrect use of the bumper may jolt the robot and 
+ *    disorient the driver.
+ */
 void rightTrigger() {
   double trigger_input = Xbox.getButtonPress(R2);
   Serial.print("R2Trigger: ");
@@ -305,6 +332,14 @@ void rightTrigger() {
   }
 }
 
+/** Maps the left trigger to the left motor
+ *    The left trigger powers the left motor. This design choice was made because
+ *    the left trigger returns an analog value based on how hard it is being pressed,
+ *    which allows us to develop precision while driving the robot. Pressing the
+ *    left bumper reverses the motor, allowing the robot to move backwards. However,
+ *    the driver must be careful, as incorrect use of the bumper may jolt the robot
+ *    and disorient the driver.
+ */
 void leftTrigger() {
   double trigger_input = Xbox.getButtonPress(L2);
   Serial.print("L2Trigger: ");
@@ -324,6 +359,10 @@ void leftTrigger() {
   }
 }
 
+/** Prints the values of the gyroscope
+ *    This allows us to understand the orientation of the robot underwater
+ *    and make necessary adjustments during the driving phase. 
+ */
 void printGyro() {
   int16_t x, y, z;
   gyro.getXYZ(&x, &y, &z);
@@ -335,6 +374,12 @@ void printGyro() {
   Serial.print(z);
 }
 
+/** Prints the values of the accelerometer
+ *    This allows us to understand how fast the robot is travelling when it's
+ *    out of sight. It is necessary during the driving phase so we don't
+ *    unintentianally crash into anything, which could potentially be
+ *    disastrous to the functionality of the robot's components.
+ */
 void printAccel() {
   double xyz[3];
   accel.getAcceleration(xyz);
