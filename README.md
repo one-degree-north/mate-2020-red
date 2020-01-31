@@ -11,13 +11,13 @@ Everything else -- practically useless
 
 #### Required Libraries:
 
-Libaries that do not need to be installed
+##### Libaries that do not need to be installed
 
 Servo.h 
 
 Wire.h
 
-Libaries that need to be installed:
+##### Libaries that need to be installed:
 
 XBOXONE.h - USB Host Shield
 
