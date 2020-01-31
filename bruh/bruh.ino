@@ -1,9 +1,13 @@
                                                                                                                                                                                         /** 
  *  Current controller configuration:
- *  Right Joystick    --> Right Servo
- *  Right Trigger     --> Right Motor
- *  Left Joystick     --> Left Servo (incomplete, need actual servo)
- *  Left Trigger      --> Left Motor (incomplete, need actual motor)
+ *  Right Joystick                --> Right Servo                       --> (incomplete, need actual servo)
+ *  Right Trigger                 --> Right Motor                       --> (incomplete, need actual motor)
+ *  Left Joystick                 --> Left Servo
+ *  Left Trigger                  --> Left Motor
+ *  D-Pad Up                      --> Back Motor Vertical Push          --> (incomplete, need actual motor)
+ *  D-Pad Down                    --> Back Motor Vertical Pull          --> (incomplete, need actual motor)
+ *  D-Pad Right                   --> Back Servo Clockwise              --> (incomplete, need actual motor)
+ *  D-Pad Left                    --> Back Servo Counter-Clockwise      --> (incomplete, need actual motor)
  */
 
 /**
@@ -23,14 +27,16 @@
 #include <SPI.h>
 #endif
 
-USB Usb;
-XBOXONE Xbox(&Usb);
-ITG3200 gyro;
-ADXL345 accel;
-Servo RIGHTMOTOR;
-Servo RIGHTSERVO;
-Servo LEFTMOTOR;
-Servo LEFTSERVO;
+
+// OBJECTS
+USB Usb;                                    // Objoct to establish USB connection between Arduino and computer
+XBOXONE Xbox(&Usb);                         // Object to use USB connection with XBox controller
+ITG3200 gyro;                               // Object to add gyroscopic functionality
+ADXL345 accel;                              // Object to add accelerometer functionality
+Servo RIGHTMOTOR;                           // Object to control the right motor
+Servo RIGHTSERVO;                           // Object to control the right servo
+Servo LEFTMOTOR;                            // Object to control the left motor
+Servo LEFTSERVO;                            // Object to control the left servo
 
 //Revision 1.3 (DEV-09947)
 #define MAX_RESET 7 //MAX3421E pin 12
