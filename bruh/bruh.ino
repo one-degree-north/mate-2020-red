@@ -130,6 +130,10 @@ void setPwmFrequency(int pin, int divisor) {
     }
     TCCR2B = TCCR2B & 0b11111000 | mode;
   }
+  Serial.print("Set pin ");
+  Serial.print(pin);
+  Serial.print(" to ");
+  Serial.println(divisor);
 }
 
 void secondAttachAndPin() {
