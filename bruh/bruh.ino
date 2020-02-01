@@ -16,11 +16,11 @@
  */
 
 // LIBRARY IMPORTS
-#include <XBOXONE.h>
-#include <Servo.h>
-#include <Wire.h>
-#include "ITG3200.h"
-#include <ADXL345.h>
+#include <XBOXONE.h>                        // Library to use the XBox Controller
+#include <Servo.h>                          // Library to use servos and motors
+#include <Wire.h>                           // Library to be able to communicate with I2C / TWI devices
+#include "ITG3200.h"                        // Library to use gyroscopic functions of an accelerometer
+#include <ADXL345.h>                        // Library to use accelerometer functions
 
 // Satisfy the IDE, which needs to see the include statment in the ino too.
 #ifdef dobogusinclude
@@ -45,26 +45,28 @@ Servo LEFTSERVO;                            // Object to control the left servo
 
 
 // PIN CONSTANTS
-#define LEFTMOTORPIN 6
-#define LEFTSERVOPIN 5
+#define LEFTMOTORPIN 6                      // Pin the LEFTMOTOR to a PWM pin
+#define LEFTSERVOPIN 5                      // Pin the LEFTSERVO to a PWM pin
 // #define RIGHTMOTORPIN value
 // #define RIGHTSERVOPIN value
 
 // CONTROLLER CONSTANTS
-#define TRIGGERMAX 1023
-#define TRIGGERMIN 0
-#define JOYSTICKMAX 32767
-#define JOYSTICKMIN -32768
-#define TRIGGERDEADZONE 10
-#define JOYSTICKDEADZONE 4000
+#define TRIGGERMAX 1023                     // The maximum value a controller trigger returns when fully pressed
+#define TRIGGERMIN 0                        // The minimum value a controller trigger returns when fully released
+#define JOYSTICKMAX 32767                   // The maximum value a controller joystick returns when fully up
+#define JOYSTICKMIN -32768                  // The minimum value a controller joystick returns when fully down
+#define TRIGGERDEADZONE 10                  // The value that needs to be exceeded to start sending power to the motor
+#define JOYSTICKDEADZONE 4000               // The value that needs to be exceeded to start sending power to the servo
 
 // MOTOR AND SERVO CONSTANTS
-#define ESCMIN 1000
-#define ESCMID 1500 // TODO: verify that this value accurately reflects motor mid
-#define ESCMAX 2000
-#define WPMAX 1000 // TODO: update to accurately reflect max
-#define WPMID 1520 // TODO: update to accurately reflect mid
-#define WPMIN 2000 // TODO: update to accurately reflect min
+#define ESCMIN 1000                         // The minimum value of writeMicroseconds for the motor to be fully powered in reverse
+#define ESCMID 1500                         // The default value of writeMicroseconds for the motor to remain still
+#define ESCMAX 2000                         // The maximum value of writeMicroseconds for the motor to be fully powered
+#define WPMIN 1000                          // The minimum value of writeMicroseconds for the servo to be in min position
+#define WPMID 1520                          // The default value of writeMicroseconds for the servo to be in equilibrium position
+#define WPMAX 2000                          // The maximum value of writeMicroseconds for the servo to be in max position
+
+
 
 
 // SETUP
@@ -74,8 +76,6 @@ void setup() {
   serialConnect();
   setPwmFrequency(LEFTMOTORPIN, 64); // force pwm at 500Hz
   setPwmFrequency(LEFTSERVOPIN, 64);
-  initGyro();
-  initAccelerometer();
   secondAttachAndPin();
   stopTest();
 }
@@ -98,6 +98,7 @@ void serialConnect() {
     Serial.print(F("\r\nOSC did not start"));
     while (1); //halt
   }
+  Serial.println("Serial connected");
   Serial.println(F("\r\nXBOX USB Library Started"));
 }
 
@@ -150,6 +151,9 @@ void secondAttachAndPin() {
   Serial.println("LEFTSERVO init done");
 }
 
+/** [DEPRECATED | DO NOT USE] initializes the gyro
+ * 
+ */
 void initGyro() {
   gyro.init();
   Serial.println("Calibrating Gyro");
@@ -157,6 +161,9 @@ void initGyro() {
   Serial.println("Gyro calibrated");
 }
 
+/** [DEPRECATED | DO NOT USE] initializes the accelerometer
+ * 
+ */
 void initAccelerometer() {
   Serial.println("Initializing accelerometer");
   
@@ -210,7 +217,7 @@ void initAccelerometer() {
 }
 
 void stopTest() {
-  Serial.println("starting 7.5s stop test      | |");
+  Serial.println("starting 7.5s stop test       ||");
   for(int i = 0; i < 30; ++i) {
     delay(250);
     Serial.print("*");
@@ -241,13 +248,8 @@ void loop() {
     Serial.println();
   }
   else {
-    Serial.println("ERROR: Controller not connected\t\t\t");
+    Serial.println("ERROR: No controller input\t\t\t");
   }
-  printGyro();
-  Serial.print("\t\t\t");
-  
-  printAccel();
-  Serial.println();
   
   delay(12);
 }
@@ -363,7 +365,7 @@ void leftTrigger() {
   }
 }
 
-/** Prints the values of the gyroscope
+/** [DEPRECATED | DO NOT USE] Prints the values of the gyroscope
  *    This allows us to understand the orientation of the robot underwater
  *    and make necessary adjustments during the driving phase. 
  */
@@ -378,7 +380,7 @@ void printGyro() {
   Serial.print(z);
 }
 
-/** Prints the values of the accelerometer
+/** [DEPRECATED | DO NOT USE] Prints the values of the accelerometer
  *    This allows us to understand how fast the robot is travelling when it's
  *    out of sight. It is necessary during the driving phase so we don't
  *    unintentianally crash into anything, which could potentially be
