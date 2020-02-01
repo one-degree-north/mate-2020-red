@@ -29,9 +29,9 @@ Wire.h - **Wire**
 
 XBOXONE.h - [**USB Host Shield**](https://github.com/felis/USB_Host_Shield_2.0)
 
-~~ADXL345.h - [**Accelerometer_ADXL345**]~~(https://github.com/Seeed-Studio/Accelerometer_ADXL345)
+~~ADXL345.h - **Accelerometer_ADXL345**~~
 
-~~ITG3200.h - [**Grove - 3-Axis Digital Gyro**]~~(https://github.com/Seeed-Studio/Grove_3_Axis_Digital_Gyro)
+~~ITG3200.h - **Grove - 3-Axis Digital Gyro**~~
 
 
 ### Hardware:
