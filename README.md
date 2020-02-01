@@ -25,7 +25,7 @@ Servo.h - **Servo**
 Wire.h - **Wire**
 
 
-###### Libaries that need to be installed:
+###### Libraries that need to be installed:
 
 XBOXONE.h - [**USB Host Shield**](https://github.com/felis/USB_Host_Shield_2.0)
 
@@ -36,7 +36,7 @@ XBOXONE.h - [**USB Host Shield**](https://github.com/felis/USB_Host_Shield_2.0)
 
 ### Hardware:
 
-* The Schmatics folder has the electric schamatics in it
+* The Schematics folder has the electric schematics in it
 
 Our current hardware is:
 Main - Arduino Mega
@@ -45,4 +45,4 @@ USB Host - USB Host Shield Keyes
 
 ~~Master - Arduino Uno SMD Edition~~
 
-~~Slave - Arduion Uno SMD Edition~~
+~~Slave - Arduino Uno SMD Edition~~
