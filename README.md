@@ -3,7 +3,7 @@
 
 The Mate Red Repo is divided into designs and code
 
-* Code - The code for the Arduino (its in the Bruh folder)
+* Software - The code for Arduino, along with the Driver interface
 
 * Hardware - Contains hardware info and electric schamatics
 
