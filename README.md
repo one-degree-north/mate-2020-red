@@ -18,7 +18,7 @@ Everything else -- practically useless
 ##### Required Libraries:
 
 
-###### Libaries that do not need to be installed:
+###### Libaries that do not need to be installed (Included in Arduino IDE):
 
 Servo.h - **Servo**
 
