@@ -80,6 +80,10 @@ void setup() {
   stopTest();
 }
 
+/** Attaches motors and servos to their respective pins on the Arduino
+ *    This is needed to be able to send power to each motor and servo. This should only
+ *    be called once; it is not needed to set the pins repeatedly.
+ */
 void attachAndPin() {
   LEFTMOTOR.attach(LEFTMOTORPIN);
   LEFTSERVO.attach(LEFTSERVOPIN);
@@ -92,6 +96,12 @@ void attachAndPin() {
   Serial.begin(115200);
 }
 
+/** Connects to the Serial
+ *    This enables the Arduino to send information to the computer. This is needed so
+ *    that the driver interface can display the information it receives. This should
+ *    only be called once; you do not need to setup the serial once it has already been
+ *    set up.
+ */
 void serialConnect() {
   while (!Serial); // Wait for serial port to connect - used on Leonardo, Teensy a/nd other boards with built-in USB CDC serial connection
   if (Usb.Init() == -1) {
@@ -102,6 +112,10 @@ void serialConnect() {
   Serial.println(F("\r\nXBOX USB Library Started"));
 }
 
+/** Used on PWM Digital pins to emulate the electricity output of Analog pins
+ *    Without enabling this functionality, the motors and servos would be unable to function
+ *    correctly. Likewise, this only needs to be called once (when setting up).
+ */
 void setPwmFrequency(int pin, int divisor) {
   byte mode;
   if(pin == 5 || pin == 6 || pin == 9 || pin == 10) {
@@ -137,6 +151,10 @@ void setPwmFrequency(int pin, int divisor) {
   Serial.println(divisor);
 }
 
+/** Pins the motors and servos for validation
+ *    It sends output to the pinned servos and motors just to validate that the motors
+ *    and servos have been properly attached to pins.
+ */
 void secondAttachAndPin() {
   LEFTMOTOR.attach(LEFTMOTORPIN,1000,2000); // (pin, min pulse width, max pulse width in microseconds) 
   delay(200); // wait

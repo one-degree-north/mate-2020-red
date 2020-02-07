@@ -45,4 +45,4 @@ USB Host - USB Host Shield Keyes
 
 ~~Master - Arduino Uno SMD Edition~~ (Not in use)
 
-~~Slave - Arduino Uno SMD Edition ~~ (Not in use)
+~~Slave - Arduino Uno SMD Edition~~ (Not in use)
