@@ -238,9 +238,10 @@ void stopTest() {
   Serial.println("starting 7.5s stop test       ||");
   for(int i = 0; i < 30; ++i) {
     delay(250);
-    Serial.print("*");
+    Serial.print("#");
   }
   Serial.println(" | program commencing");
+  Serial.println("setup completed");
 }
 
 
@@ -261,12 +262,11 @@ void loop() {
   Usb.Task();
   if (Xbox.XboxOneConnected) {
     leftJoystick();
-    Serial.print("\t\t\t");
     leftTrigger();
     Serial.println();
   }
   else {
-    Serial.println("ERROR: No controller input\t\t\t");
+    Serial.println("ERROR: No controller input");
   }
   
   delay(12);
@@ -284,22 +284,23 @@ void loop() {
  */
 void rightJoystick() {
   double joystick_input = Xbox.getAnalogHat(RightHatY);
-  Serial.print("RightHatY: ");
+  Serial.print("RightHatY:");
   Serial.print(joystick_input);
   if (joystick_input > JOYSTICKDEADZONE || joystick_input < -1 * JOYSTICKDEADZONE) {
     double power;
     if(joystick_input > 0) power = map(joystick_input, JOYSTICKDEADZONE, JOYSTICKMAX, WPMID, WPMAX);
     else                   power = map(joystick_input, JOYSTICKMIN, -1*JOYSTICKDEADZONE, WPMIN, WPMID);
 
-    Serial.print(",\t\toutput:");
+    Serial.print("|");
     Serial.print(power);
 
     // RIGHTSERVO.writeMicroseconds(power);
   }
   else {
-    Serial.print(", no output");
+    Serial.print("|0");
     // RIGHTSERVO.writeMicroseconds(1520);
   }
+  Serial.print(">");
 }
 
 /** Maps the left joystick to the left servo
@@ -312,7 +313,7 @@ void rightJoystick() {
  */
 void leftJoystick() {
   double joystick_input = Xbox.getAnalogHat(LeftHatY);
-  Serial.print("LeftHatY: ");
+  Serial.print("LeftHatY:");
   Serial.print(joystick_input);
   
   if (joystick_input > JOYSTICKDEADZONE || joystick_input < -1 * JOYSTICKDEADZONE) {
@@ -320,15 +321,16 @@ void leftJoystick() {
     if(joystick_input > 0) power = map(joystick_input, JOYSTICKDEADZONE, JOYSTICKMAX, WPMID, WPMAX);
     else                   power = map(joystick_input, JOYSTICKMIN, -1*JOYSTICKDEADZONE, WPMIN, WPMID);
 
-    Serial.print(",\t\toutput:");
+    Serial.print("|");
     Serial.print(power);
 
     LEFTSERVO.writeMicroseconds(power);
   }
   else {
-    Serial.print("no output");
+    Serial.print("|0");
     LEFTSERVO.writeMicroseconds(1520);
   }
+  Serial.print(">");
 }
 
 /** Maps the right trigger to the right motor
@@ -341,19 +343,20 @@ void leftJoystick() {
  */
 void rightTrigger() {
   double trigger_input = Xbox.getButtonPress(R2);
-  Serial.print("R2Trigger: ");
+  Serial.print("R2Trigger:");
   Serial.print(trigger_input);
   if(trigger_input > TRIGGERDEADZONE) {
     double power = map(trigger_input, TRIGGERDEADZONE, TRIGGERMAX, ESCMIN, ESCMAX);
 
     // RIGHTMOTOR.writeMicroseconds(power);
 
-    Serial.print(",\t\toutput: ");
+    Serial.print("|");
     Serial.print(power);
   }
   else {
-    Serial.print(", no output");
+    Serial.print("|0");
   }
+  Serial.print(">");
 }
 
 /** Maps the left trigger to the left motor
@@ -366,7 +369,7 @@ void rightTrigger() {
  */
 void leftTrigger() {
   double trigger_input = Xbox.getButtonPress(L2);
-  Serial.print("L2Trigger: ");
+  Serial.print("L2Trigger:");
   Serial.print(trigger_input);
   if(trigger_input > TRIGGERDEADZONE) {
     double power = map(trigger_input, TRIGGERDEADZONE, TRIGGERMAX, ESCMIN, ESCMAX);
@@ -374,13 +377,14 @@ void leftTrigger() {
     LEFTMOTOR.writeMicroseconds(power);
     //TODO: Bumper take make value negative
 
-    Serial.print(",\t\toutput: ");
+    Serial.print("|");
     Serial.print(power);
   }
   else {
-    Serial.print(", no output");
+    Serial.print("|0");
     LEFTMOTOR.writeMicroseconds(1500);
   }
+  Serial.print(">");
 }
 
 /** [DEPRECATED | DO NOT USE] Prints the values of the gyroscope
