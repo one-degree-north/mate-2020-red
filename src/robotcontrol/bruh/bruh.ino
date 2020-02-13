@@ -269,7 +269,7 @@ void loop() {
     Serial.println("ERROR: No controller input");
   }
   
-  delay(12);
+  delay(15);
 }
 
 
