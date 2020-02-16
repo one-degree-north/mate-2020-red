@@ -113,7 +113,7 @@ void attachAndPin() {
 void serialConnect() {
   while (!Serial); // Wait for serial port to connect - used on Leonardo, Teensy a/nd other boards with built-in USB CDC serial connection
   if (Usb.Init() == -1) {
-    Serial.print(F("\r\nOSC di not start"));
+    Serial.print(F("\r\nOSC did not start"));
     while (1); //halt
   }
   Serial.println("Serial connected");
