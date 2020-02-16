@@ -38,10 +38,12 @@ Servo RIGHTMOTOR;                           // Object to control the right motor
 Servo RIGHTSERVO;                           // Object to control the right servo
 Servo LEFTMOTOR;                            // Object to control the left motor
 Servo LEFTSERVO;                            // Object to control the left servo
+Servo BACKMOTOR;                            // Object to control the rear motor
+Servo BACKSERVO;                            // Object to control the rear servo
 
 //Revision 1.3 (DEV-09947)
-#define MAX_RESET 7 //MAX3421E pin 12
-#define MAX_GPX   8 //MAX3421E pin 17
+#define MAX_RESET 7                         //MAX3421E pin 12
+#define MAX_GPX   8                         //MAX3421E pin 17
 
 
 // PIN CONSTANTS
@@ -49,6 +51,8 @@ Servo LEFTSERVO;                            // Object to control the left servo
 #define LEFTSERVOPIN 5                      // Pin the LEFTSERVO to a PWM pin
 // #define RIGHTMOTORPIN value
 // #define RIGHTSERVOPIN value
+// #define BACKMOTORPIN value
+// #define BACKSERVOPIN value
 
 // CONTROLLER CONSTANTS
 #define TRIGGERMAX 1023                     // The maximum value a controller trigger returns when fully pressed
@@ -62,9 +66,9 @@ Servo LEFTSERVO;                            // Object to control the left servo
 #define ESCMIN 1000                         // The minimum value of writeMicroseconds for the motor to be fully powered in reverse
 #define ESCMID 1500                         // The default value of writeMicroseconds for the motor to remain still
 #define ESCMAX 2000                         // The maximum value of writeMicroseconds for the motor to be fully powered
-#define WPMIN 1000                          // The minimum value of writeMicroseconds for the servo to be in min position
-#define WPMID 1520                          // The default value of writeMicroseconds for the servo to be in equilibrium position
-#define WPMAX 2000                          // The maximum value of writeMicroseconds for the servo to be in max position
+#define WPMIN 900                           // The minimum value of writeMicroseconds for the servo to be in min position
+#define WPMID 1500                          // The default value of writeMicroseconds for the servo to be in equilibrium position
+#define WPMAX 2100                          // The maximum value of writeMicroseconds for the servo to be in max position
 
 
 
@@ -87,6 +91,10 @@ void setup() {
 void attachAndPin() {
   LEFTMOTOR.attach(LEFTMOTORPIN);
   LEFTSERVO.attach(LEFTSERVOPIN);
+  // RIGHTMOTOR.attach(RIGHTMOTORPIN);
+  // RIGHTSERVO.attach(RIGHTSERVOPIN);
+  // BACKMOTOR.attach(BACKMOTORPIN);
+  // BACKSERVO.attach(BACKSERVOPIN);
   pinMode(MAX_GPX, INPUT);
   pinMode(MAX_RESET, OUTPUT); 
   digitalWrite(MAX_RESET, LOW); 
@@ -156,17 +164,41 @@ void setPwmFrequency(int pin, int divisor) {
  *    and servos have been properly attached to pins.
  */
 void secondAttachAndPin() {
-  LEFTMOTOR.attach(LEFTMOTORPIN,1000,2000); // (pin, min pulse width, max pulse width in microseconds) 
-  delay(200); // wait
-  LEFTMOTOR.writeMicroseconds(1800); // throttle init
-  delay(200); // wait
-  LEFTMOTOR.writeMicroseconds(1500); // stop
-  Serial.println("LEFTMOTOR init done");
-  LEFTSERVO.attach(LEFTSERVOPIN,900,2100);
-  LEFTSERVO.writeMicroseconds(1500);
+  motorPin(LEFTMOTOR, LEFTMOTORPIN);
+  servoPin(LEFTSERVO, LEFTSERVOPIN);
+  // motorPin(RIGHTMOTOR, RIGHTMOTORPIN);
+  // servoPin(RIGHTSERVO, RIGHTSERVOPIN);
+  // motorPin(BACKMOTOR, BACKMOTORPIN);
+  // servoPin(BACKSERVO, BACKSERVOPIN);
+}
+
+/** Individually pins motors
+ *    Used for convenience, rather than having to retype this block of code multiple times
+ *    for each motor.
+ */
+void motorPin(Servo motor, int pin) {
+  motor.attach(pin, ESCMIN, ESCMAX);            // (pin, min pulse width, max pulse width in microseconds)
   delay(200);
-  LEFTSERVO.writeMicroseconds(1500);
-  Serial.println("LEFTSERVO init done");
+  motor.writeMicroseconds(1800);                // throttle init
+  delay(200);
+  motor.writeMicroseconds(ESCMID);              // stop
+  Serial.print("Motor setup to pin ");
+  Serial.print(pin);
+  Serial.println(" complete.");
+}
+
+/** Individually pins servos
+ *    Used for convenience, rather than having to retype this block of code multiple times
+ *    for each servo.
+ */
+void servoPin(Servo servo, int pin) {
+  servo.attach(pin, WPMIN, WPMAX);
+  servo.writeMicroseconds(WPMID);
+  delay(200);
+  servo.writeMicroseconds(WPMID);
+  Serial.print("Servo setup to pin ");
+  Serial.print(pin);
+  Serial.println(" complete.");
 }
 
 /** [DEPRECATED | DO NOT USE] initializes the gyro
@@ -238,9 +270,10 @@ void stopTest() {
   Serial.println("starting 7.5s stop test       ||");
   for(int i = 0; i < 30; ++i) {
     delay(250);
-    Serial.print("*");
+    Serial.print("#");
   }
   Serial.println(" | program commencing");
+  Serial.println("setup completed");
 }
 
 
@@ -261,15 +294,14 @@ void loop() {
   Usb.Task();
   if (Xbox.XboxOneConnected) {
     leftJoystick();
-    Serial.print("\t\t\t");
     leftTrigger();
     Serial.println();
   }
   else {
-    Serial.println("ERROR: No controller input\t\t\t");
+    Serial.println("ERROR: No controller input");
   }
   
-  delay(12);
+  delay(15);
 }
 
 
@@ -284,22 +316,23 @@ void loop() {
  */
 void rightJoystick() {
   double joystick_input = Xbox.getAnalogHat(RightHatY);
-  Serial.print("RightHatY: ");
+  Serial.print("RightHatY:");
   Serial.print(joystick_input);
   if (joystick_input > JOYSTICKDEADZONE || joystick_input < -1 * JOYSTICKDEADZONE) {
     double power;
     if(joystick_input > 0) power = map(joystick_input, JOYSTICKDEADZONE, JOYSTICKMAX, WPMID, WPMAX);
     else                   power = map(joystick_input, JOYSTICKMIN, -1*JOYSTICKDEADZONE, WPMIN, WPMID);
 
-    Serial.print(",\t\toutput:");
+    Serial.print("|");
     Serial.print(power);
 
     // RIGHTSERVO.writeMicroseconds(power);
   }
   else {
-    Serial.print(", no output");
-    // RIGHTSERVO.writeMicroseconds(1520);
+    Serial.print("|0");
+    // RIGHTSERVO.writeMicroseconds(WPMID);
   }
+  Serial.print(">");
 }
 
 /** Maps the left joystick to the left servo
@@ -312,7 +345,7 @@ void rightJoystick() {
  */
 void leftJoystick() {
   double joystick_input = Xbox.getAnalogHat(LeftHatY);
-  Serial.print("LeftHatY: ");
+  Serial.print("LeftHatY:");
   Serial.print(joystick_input);
   
   if (joystick_input > JOYSTICKDEADZONE || joystick_input < -1 * JOYSTICKDEADZONE) {
@@ -320,15 +353,16 @@ void leftJoystick() {
     if(joystick_input > 0) power = map(joystick_input, JOYSTICKDEADZONE, JOYSTICKMAX, WPMID, WPMAX);
     else                   power = map(joystick_input, JOYSTICKMIN, -1*JOYSTICKDEADZONE, WPMIN, WPMID);
 
-    Serial.print(",\t\toutput:");
+    Serial.print("|");
     Serial.print(power);
 
     LEFTSERVO.writeMicroseconds(power);
   }
   else {
-    Serial.print("no output");
-    LEFTSERVO.writeMicroseconds(1520);
+    Serial.print("|0");
+    LEFTSERVO.writeMicroseconds(WPMID);
   }
+  Serial.print(">");
 }
 
 /** Maps the right trigger to the right motor
@@ -341,19 +375,20 @@ void leftJoystick() {
  */
 void rightTrigger() {
   double trigger_input = Xbox.getButtonPress(R2);
-  Serial.print("R2Trigger: ");
+  Serial.print("R2Trigger:");
   Serial.print(trigger_input);
   if(trigger_input > TRIGGERDEADZONE) {
     double power = map(trigger_input, TRIGGERDEADZONE, TRIGGERMAX, ESCMIN, ESCMAX);
 
     // RIGHTMOTOR.writeMicroseconds(power);
 
-    Serial.print(",\t\toutput: ");
+    Serial.print("|");
     Serial.print(power);
   }
   else {
-    Serial.print(", no output");
+    Serial.print("|0");
   }
+  Serial.print(">");
 }
 
 /** Maps the left trigger to the left motor
@@ -366,7 +401,7 @@ void rightTrigger() {
  */
 void leftTrigger() {
   double trigger_input = Xbox.getButtonPress(L2);
-  Serial.print("L2Trigger: ");
+  Serial.print("L2Trigger:");
   Serial.print(trigger_input);
   if(trigger_input > TRIGGERDEADZONE) {
     double power = map(trigger_input, TRIGGERDEADZONE, TRIGGERMAX, ESCMIN, ESCMAX);
@@ -374,13 +409,60 @@ void leftTrigger() {
     LEFTMOTOR.writeMicroseconds(power);
     //TODO: Bumper take make value negative
 
-    Serial.print(",\t\toutput: ");
+    Serial.print("|");
     Serial.print(power);
   }
   else {
-    Serial.print(", no output");
-    LEFTMOTOR.writeMicroseconds(1500);
+    Serial.print("|0");
+    LEFTMOTOR.writeMicroseconds(ESCMID);
   }
+  Serial.print(">");
+}
+
+/** Maps the directional pad to the back motor and servo
+ *    The reasoning for this is that the back motors and servos do not require as much 
+ *    precision compared to the ones located on the sides. 
+ */
+void directionalPad() {
+  dpadMotor();
+  dpadServo();
+}
+
+/** Maps the up and down buttons of the directional pad to the motor
+ * 
+ */
+void dpadMotor() {
+  if(Xbox.getButtonClick(UP)) {
+    //BACKMOTOR.writeMicroseconds(ESCMAX - 200);
+    Serial.print("UP");
+  }
+  else if (Xbox.getButtonClick(DOWN)) {
+    //BACKMOTOR.writeMicroseconds(ESCMIN + 200);
+    Serial.print("DOWN");
+  }
+  else {
+    //BACKMOTOR.writeMicroseconds(ESCMID);
+    Serial.print("NONE");
+  }
+  Serial.print(">");
+}
+/** Maps the right and left buttons of the directional pad to the servo
+ * 
+ */
+void dpadServo() {
+  if(Xbox.getButtonClick(RIGHT)) {
+    //BACKSERVO.writeMicroseconds(WPMAX);
+    Serial.print("RIGHT");
+  }
+  else if (Xbox.getButtonClick(LEFT)) {
+    //BACKSERVO.writeMicroseconds(WPMIN);
+    Serial.print("LEFT");
+  }
+  else {
+    //BACKSERVO.writeMicroseconds(WPMID);
+    Serial.print("NONE");
+  }
+  Serial.print(">");
 }
 
 /** [DEPRECATED | DO NOT USE] Prints the values of the gyroscope
