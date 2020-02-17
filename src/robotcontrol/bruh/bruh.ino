@@ -27,6 +27,8 @@
 #include <spi4teensy3.h>
 #include <SPI.h>
 #endif
+#include <LiquidCrystal.h>
+#include <TimeLib.h>
 
 
 // OBJECTS
@@ -72,13 +74,62 @@ Servo LEFTSERVO;                            // Object to control the left servo
 // SETUP
 
 void setup() { 
+  Serial.begin(115200);
   attachAndPin();
   serialConnect();
   setPwmFrequency(LEFTMOTORPIN, 64); // force pwm at 500Hz
   setPwmFrequency(LEFTSERVOPIN, 64);
   secondAttachAndPin();
   stopTest();
+  Serial.println(digitalClockDisplay())
 }
+
+//This code creates time stamps for every power-value and asks the Serial monitor to print them
+// initialize the library by associating any needed LCD interface pin
+// with the arduino pin number it is connected to
+void loop() {
+  if (Serial.available()) {
+    processSyncMessage();
+  }
+  if (timeStatus()!= timeNotSet) {
+    digitalClockDisplay();  
+  }
+  if (timeStatus() == timeSet) {
+    digitalWrite(13, HIGH); // LED on if synced
+  } else {
+    digitalWrite(13, LOW);  // LED off if needs refresh
+  }
+}
+
+void digitalClockDisplay(){
+  // digital clock display of the time
+  Serial.print("Time ");
+  Serial.print(hour());
+  Serial.print(hour());
+  printDigits(minute());
+  printDigits(second());
+}
+
+void printDigits(int digits){
+  // utility function for digital clock display: prints preceding colon and leading 0
+  Serial.print(":");
+  if(digits < 10)
+    Serial.print('0');
+  Serial.print(digits);
+}
+
+
+void processSyncMessage() {
+  unsigned long pctime;
+  const unsigned long DEFAULT_TIME = 1357041600; // Jan 1 2019
+
+  if(Serial.find(TIME_HEADER)) {
+     pctime = Serial.parseInt();
+     if( pctime >= DEFAULT_TIME) { // check the integer is a valid time (greater than Jan 1 2013)
+       setTime(pctime); // Sync Arduino clock to the time received on the serial port
+     }
+  }
+}//might add time parser back
 
 /** Attaches motors and servos to their respective pins on the Arduino
  *    This is needed to be able to send power to each motor and servo. This should only
