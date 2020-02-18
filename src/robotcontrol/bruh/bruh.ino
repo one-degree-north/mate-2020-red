@@ -455,9 +455,9 @@ void dpadMotor() {
  */
 void dpadServo() {
   int setting = 0;
-  if(Xbox.getButtonClick(RIGHT)) setting = 1; 
-  else if (Xbox.getButtonClick(LEFT)) setting = 2; 
-  else if (Xbox.getButtonClick(X)) setting = 0;
+  if(Xbox.getButtonClick(RIGHT))        setting = 1; 
+  else if (Xbox.getButtonClick(LEFT))   setting = 2; 
+  else if (Xbox.getButtonClick(X))      setting = 0;
 
   if(setting == 1) {
     BACKSERVO.writeMicroseconds(WPMAX);
