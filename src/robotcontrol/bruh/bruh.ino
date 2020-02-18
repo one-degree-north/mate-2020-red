@@ -1,4 +1,4 @@
-                                                                                                                                                                                        /** 
+/* 
  *  Current controller configuration:
  *  Right Joystick                --> Right Servo                       --> (incomplete, need actual servo)
  *  Right Trigger                 --> Right Motor                       --> (incomplete, need actual motor)
@@ -447,21 +447,31 @@ void dpadMotor() {
   Serial.print(">");
 }
 /** Maps the right and left buttons of the directional pad to the servo
- * 
+ *    The back servo does not require as much precision as the side motors. There are
+ *    only three settings for the servo: rightmost, leftmost, and equilibrium. Furthermore,
+ *    the servo will remain in its current setting unless it is told to change by a
+ *    different button. To return to equilibrium, the 'X' button on the controller must be
+ *    pressed.
  */
 void dpadServo() {
-  if(Xbox.getButtonClick(RIGHT)) {
-    //BACKSERVO.writeMicroseconds(WPMAX);
+  int setting = 0;
+  if(Xbox.getButtonClick(RIGHT))        setting = 1; 
+  else if (Xbox.getButtonClick(LEFT))   setting = 2; 
+  else if (Xbox.getButtonClick(X))      setting = 0;
+
+  if(setting == 1) {
+    BACKSERVO.writeMicroseconds(WPMAX);
     Serial.print("RIGHT");
   }
-  else if (Xbox.getButtonClick(LEFT)) {
-    //BACKSERVO.writeMicroseconds(WPMIN);
+  else if (setting == 2) {
+    BACKSERVO.writeMicroseconds(WPMIN);
     Serial.print("LEFT");
   }
-  else {
-    //BACKSERVO.writeMicroseconds(WPMID);
+  else if (setting == 0) {
+    BACKSERVO.writeMicroseconds(WPMID);
     Serial.print("NONE");
   }
+
   Serial.print(">");
 }
 
