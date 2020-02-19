@@ -484,15 +484,17 @@ void dpadServo() {
 }
 
 
-/** General function of method >> PLEASE INSERT
- *    This code creates time stamps for every power-value and asks the Serial monitor to print them
- *    initialize the library by associating any needed LCD interface pin with the arduino pin number
- *    it is connected to.
- *    >> PLEASE ADD BETTER DESCRIPTION
+/** Places timestamps for all power-mapping values from the controller >> 
+ *    For every power-mapping value that the serial monitor outputs
+ *    the following code generates time stamps to mark the time at which each power
+ *    value is used and displays it alongside each power value. This data will later be used in 
+ *    conjunction with the time values to allow the driver to visualize how much power they are using and 
+ *    increase their efficiency based on analyzing these values.
+ *    
  */
 
 void digitalClockDisplay(){
-  // digital clock display of the time
+  // digital clock display of the time printed to the serial monitor
   Serial.print("Time ");
   Serial.print(hour());
   Serial.print(hour());
@@ -501,7 +503,8 @@ void digitalClockDisplay(){
 }
 
 void printDigits(int digits){
-  // utility function for digital clock display: prints preceding colon and leading 0
+  // utility function for digital clock display: prints preceding colon and leading 0 in front of the hours
+  
   Serial.print(":");
   if(digits < 10)
     Serial.print('0');
@@ -515,7 +518,7 @@ void processSyncMessage() {
 
   if(Serial.find(TIME_HEADER)) {
      pctime = Serial.parseInt();
-     if( pctime >= DEFAULT_TIME) { // check the integer is a valid time (greater than Jan 1 2013)
+     if( pctime >= DEFAULT_TIME) { // check the integer is a valid time (greater than Jan 1 2019)
        setTime(pctime); // Sync Arduino clock to the time received on the serial port
      }
   }
@@ -543,6 +546,7 @@ void printGyro() {
  *    out of sight. It is necessary during the driving phase so we don't
  *    unintentianally crash into anything, which could potentially be
  *    disastrous to the functionality of the robot's components.
+
  */
 void printAccel() {
   double xyz[3];
