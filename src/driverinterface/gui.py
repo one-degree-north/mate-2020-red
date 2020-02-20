@@ -1,5 +1,3 @@
-#Graph
-
 import tkinter as tkinter
 from matplotlib import pyplot as plt
 import matplotlib.colors as mcolors
@@ -24,7 +22,7 @@ arduino = serial.Serial('/dev/cu.usbmodem141401', 115200)
 data = arduino.readline()
 time.sleep(1) # wait before reading next line tabbed split info
 data = arduino.readline()
-pieces = data.split("\t")
+pieces = data.split(">")
 
 pieces[0] = time
 pieces[1] = power_level
@@ -35,6 +33,7 @@ with mydb:
     mycursor.execute("""INSERT INTO output VALUES('',%s,%s)""", (power_level, time))
     mydb.commit()
     mycursor.close() 
+
 
 class Application(tk.Frame):
     def___init____(self, master=None)
