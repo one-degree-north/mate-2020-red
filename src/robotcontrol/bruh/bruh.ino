@@ -458,7 +458,7 @@ void dpadMotor() {
  *    The back servo does not require as much precision as the side motors. There are
  *    only three settings for the servo: rightmost, leftmost, and equilibrium. Furthermore,
  *    the servo will remain in its current setting unless it is told to change by a
- *    different button. To return to equilibrium, the 'X' button on the controller must be
+ *    different brutton. To return to equilibrium, the 'X' button on the controller must be
  *    pressed.
  */
 void dpadServo() {
@@ -490,7 +490,6 @@ void dpadServo() {
  *    value is used and displays it alongside each power value. This data will later be used in 
  *    conjunction with the time values to allow the driver to visualize how much power they are using and 
  *    increase their efficiency based on analyzing these values.
- *    
  */
 
 void digitalClockDisplay(){
@@ -502,6 +501,11 @@ void digitalClockDisplay(){
   printDigits(second());
 }
 
+/** This function puts the inputted time in the correct format and allows the 
+ *  serial monitor to process the pc time in a constant templated format.
+ */
+
+
 void printDigits(int digits){
   // utility function for digital clock display: prints preceding colon and leading 0 in front of the hours
   
@@ -511,6 +515,11 @@ void printDigits(int digits){
   Serial.print(digits);
 }
 
+/** This message syncs the time on the PC or other monitor device with time on it to
+ * the serial monitor in order to allow the serial monitor to output the time alongside
+ * each mapped power level, making it easier to store data aboyt the relationship between time
+ * and power level.
+ */
 
 void processSyncMessage() {
   unsigned long pctime;
@@ -546,7 +555,6 @@ void printGyro() {
  *    out of sight. It is necessary during the driving phase so we don't
  *    unintentianally crash into anything, which could potentially be
  *    disastrous to the functionality of the robot's components.
-
  */
 void printAccel() {
   double xyz[3];
