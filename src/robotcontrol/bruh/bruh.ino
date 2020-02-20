@@ -46,7 +46,7 @@ Servo BACKSERVO;                            // Object to control the rear servo
 //Revision 1.3 (DEV-09947)
 #define MAX_RESET 7                         // MAX3421E pin 12
 #define MAX_GPX   8                         // MAX3421E pin 17
-#define LEDSYNCPIN 20                       // Pin to display whether clock is synced
+#define TIMESYNCLEDPIN 20                       // Pin to display whether clock is synced
 
 // PIN CONSTANTS
 #define LEFTMOTORPIN 6                      // Pin the LEFTMOTOR to a PWM pin
@@ -554,5 +554,3 @@ void printAccel() {
   Serial.print("  z-accel: ");
   Serial.print(xyz[2]);
 }
-
-
