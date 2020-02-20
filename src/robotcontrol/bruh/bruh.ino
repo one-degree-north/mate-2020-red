@@ -501,7 +501,8 @@ void digitalClockDisplay(){
   printDigits(second());
 }
 
-/** This function puts the inputted time in the correct format and allows the 
+/** Formats the time outputted by the serial monitor in a comprehensive way >>
+ *  This function puts the inputted time in the correct format and allows the 
  *  serial monitor to process the pc time in a constant templated format.
  */
 
@@ -515,7 +516,8 @@ void printDigits(int digits){
   Serial.print(digits);
 }
 
-/** This message syncs the time on the PC or other monitor device with time on it to
+/**Syncs the time on an electronic device to the time on the serial monitor >>
+ * This message syncs the time on the PC or other monitor device with time on it to
  * the serial monitor in order to allow the serial monitor to output the time alongside
  * each mapped power level, making it easier to store data aboyt the relationship between time
  * and power level.
