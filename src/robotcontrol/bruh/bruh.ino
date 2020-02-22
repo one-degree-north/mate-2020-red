@@ -46,7 +46,7 @@ Servo BACKSERVO;                            // Object to control the rear servo
 //Revision 1.3 (DEV-09947)
 #define MAX_RESET 7                         // MAX3421E pin 12
 #define MAX_GPX   8                         // MAX3421E pin 17
-#define LEDSYNCPIN 20                       // Pin to display whether clock is synced
+#define TIMESYNCLEDPIN 20                       // Pin to display whether clock is synced
 
 // PIN CONSTANTS
 #define LEFTMOTORPIN 6                      // Pin the LEFTMOTOR to a PWM pin
@@ -458,7 +458,7 @@ void dpadMotor() {
  *    The back servo does not require as much precision as the side motors. There are
  *    only three settings for the servo: rightmost, leftmost, and equilibrium. Furthermore,
  *    the servo will remain in its current setting unless it is told to change by a
- *    different button. To return to equilibrium, the 'X' button on the controller must be
+ *    different brutton. To return to equilibrium, the 'X' button on the controller must be
  *    pressed.
  */
 void dpadServo() {
@@ -484,15 +484,16 @@ void dpadServo() {
 }
 
 
-/** General function of method >> PLEASE INSERT
- *    This code creates time stamps for every power-value and asks the Serial monitor to print them
- *    initialize the library by associating any needed LCD interface pin with the arduino pin number
- *    it is connected to.
- *    >> PLEASE ADD BETTER DESCRIPTION
+/** Places timestamps for all power-mapping values from the controller >> 
+ * For every power-mapping value that the serial monitor outputs
+ * the digitalClockDisplay() method generates time stamps alongside the regular 
+ * output of power-levels of the motors. This provides a standard timekeeping
+ * mechanism that will allow for mathematical manipulations and processing the time-data against the power-level
+ * data to be much more efficient and organized.
  */
 
 void digitalClockDisplay(){
-  // digital clock display of the time
+  // digital clock display of the time printed to the serial monitor
   Serial.print("Time ");
   Serial.print(hour());
   Serial.print(hour());
@@ -500,14 +501,29 @@ void digitalClockDisplay(){
   printDigits(second());
 }
 
+/** Formats the time outputted by the serial monitor in a comprehensive way >>
+ *  This function puts the inputted time in the correct format and allows the 
+ *  serial monitor to process the pc time in a constant templated format.
+ */
+
+
 void printDigits(int digits){
-  // utility function for digital clock display: prints preceding colon and leading 0
+  // utility function for digital clock display: prints preceding colon and leading 0 in front of the hours
+  
   Serial.print(":");
   if(digits < 10)
     Serial.print('0');
   Serial.print(digits);
 }
 
+/** Syncs the time on an electronic device to the time on the serial monitor >>
+ * This message syncs PC time to the serial monitor in order to allow 
+ * the serial monitor to incrementally output time values as the power-levels
+ * from the T100 thrusters are also outputted. Through doing so, 
+ * an easier mechanism to plot the relationship between time passed
+ * and change in power-level, which could be used by the driver 
+ * to help understand the robot's power efficiency and usage over time as they drive
+ */
 
 void processSyncMessage() {
   unsigned long pctime;
@@ -515,7 +531,7 @@ void processSyncMessage() {
 
   if(Serial.find(TIME_HEADER)) {
      pctime = Serial.parseInt();
-     if( pctime >= DEFAULT_TIME) { // check the integer is a valid time (greater than Jan 1 2013)
+     if( pctime >= DEFAULT_TIME) { // check the integer is a valid time (greater than Jan 1 2019)
        setTime(pctime); // Sync Arduino clock to the time received on the serial port
      }
   }
@@ -554,5 +570,3 @@ void printAccel() {
   Serial.print("  z-accel: ");
   Serial.print(xyz[2]);
 }
-
-
