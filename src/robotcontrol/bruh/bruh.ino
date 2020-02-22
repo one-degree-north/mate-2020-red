@@ -51,10 +51,10 @@ Servo BACKSERVO;                            // Object to control the rear servo
 // PIN CONSTANTS
 #define LEFTMOTORPIN  6                     // Pin the LEFTMOTOR to a PWM pin
 #define LEFTSERVOPIN  5                     // Pin the LEFTSERVO to a PWM pin
-#define RIGHTMOTORPIN 
-#define RIGHTSERVOPIN 
-#define BACKMOTORPIN  
-#define BACKSERVOPIN  
+#define RIGHTMOTORPIN 9                     // Pin the RIGHTMOTOR to a PWM pin
+#define RIGHTSERVOPIN 3                     // Pin the RIGHTMOTOR to a PWM pin
+#define BACKMOTORPIN  7                     // Pin the RIGHTMOTOR to a PWM pin
+#define BACKSERVOPIN  4                     // Pin the RIGHTMOTOR to a PWM pin
 
 // CONTROLLER CONSTANTS
 #define TRIGGERMAX 1023                     // The maximum value a controller trigger returns when fully pressed
