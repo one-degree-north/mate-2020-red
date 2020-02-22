@@ -44,17 +44,17 @@ Servo BACKMOTOR;                            // Object to control the rear motor
 Servo BACKSERVO;                            // Object to control the rear servo
 
 //Revision 1.3 (DEV-09947)
-#define MAX_RESET 7                         // MAX3421E pin 12
-#define MAX_GPX   8                         // MAX3421E pin 17
-#define TIMESYNCLEDPIN 20                       // Pin to display whether clock is synced
+#define MAX_RESET      7                    // MAX3421E pin 12
+#define MAX_GPX        8                    // MAX3421E pin 17
+#define TIMESYNCLEDPIN 20                   // Pin to display whether clock is synced
 
 // PIN CONSTANTS
-#define LEFTMOTORPIN 6                      // Pin the LEFTMOTOR to a PWM pin
-#define LEFTSERVOPIN 5                      // Pin the LEFTSERVO to a PWM pin
-// #define RIGHTMOTORPIN value
-// #define RIGHTSERVOPIN value
-// #define BACKMOTORPIN value
-// #define BACKSERVOPIN value
+#define LEFTMOTORPIN  6                     // Pin the LEFTMOTOR to a PWM pin
+#define LEFTSERVOPIN  5                     // Pin the LEFTSERVO to a PWM pin
+#define RIGHTMOTORPIN 
+#define RIGHTSERVOPIN 
+#define BACKMOTORPIN  
+#define BACKSERVOPIN  
 
 // CONTROLLER CONSTANTS
 #define TRIGGERMAX 1023                     // The maximum value a controller trigger returns when fully pressed
@@ -81,8 +81,7 @@ void setup() {
   Serial.begin(115200);
   attachAndPin();
   serialConnect();
-  setPwmFrequency(LEFTMOTORPIN, 64); // force pwm at 500Hz
-  setPwmFrequency(LEFTSERVOPIN, 64);
+  setAllPwm();
   secondAttachAndPin();
   stopTest();
   //Serial.println(digitalClockDisplay())
@@ -94,10 +93,10 @@ void setup() {
 void attachAndPin() {
   LEFTMOTOR.attach(LEFTMOTORPIN);
   LEFTSERVO.attach(LEFTSERVOPIN);
-  // RIGHTMOTOR.attach(RIGHTMOTORPIN);
-  // RIGHTSERVO.attach(RIGHTSERVOPIN);
-  // BACKMOTOR.attach(BACKMOTORPIN);
-  // BACKSERVO.attach(BACKSERVOPIN);
+  RIGHTMOTOR.attach(RIGHTMOTORPIN);
+  RIGHTSERVO.attach(RIGHTSERVOPIN);
+  BACKMOTOR.attach(BACKMOTORPIN);
+  BACKSERVO.attach(BACKSERVOPIN);
   pinMode(MAX_GPX, INPUT);
   pinMode(MAX_RESET, OUTPUT); 
   digitalWrite(MAX_RESET, LOW); 
@@ -121,6 +120,19 @@ void serialConnect() {
   }
   Serial.println("Serial connected");
   Serial.println(F("\r\nXBOX USB Library Started"));
+}
+
+/** Set the PWM Frequency of all motors/servos
+ *    Emulate analog electricity output for digital pins on all of our servos/motors.
+ *    Keeps setup() code clean. Forces PWM at 500Hz for all servos and motors.
+ */
+void setAllPwm() {
+    setPwmFrequency(LEFTMOTORPIN, 64);
+    setPwmFrequency(LEFTSERVOPIN, 64);
+    setPwmFrequency(RIGHTMOTORPIN, 64);
+    setPwmFrequency(RIGHTSERVOPIN, 64);
+    setPwmFrequency(BACKSERVOPIN, 64);
+    setPwmFrequency(BACKSERVOPIN, 64);
 }
 
 /** Used on PWM Digital pins to emulate the electricity output of Analog pins
@@ -169,10 +181,10 @@ void setPwmFrequency(int pin, int divisor) {
 void secondAttachAndPin() {
   motorPin(LEFTMOTOR, LEFTMOTORPIN);
   servoPin(LEFTSERVO, LEFTSERVOPIN);
-  // motorPin(RIGHTMOTOR, RIGHTMOTORPIN);
-  // servoPin(RIGHTSERVO, RIGHTSERVOPIN);
-  // motorPin(BACKMOTOR, BACKMOTORPIN);
-  // servoPin(BACKSERVO, BACKSERVOPIN);
+  motorPin(RIGHTMOTOR, RIGHTMOTORPIN);
+  servoPin(RIGHTSERVO, RIGHTSERVOPIN);
+  motorPin(BACKMOTOR, BACKMOTORPIN);
+  servoPin(BACKSERVO, BACKSERVOPIN);
 }
 
 /** Individually pins motors
@@ -298,15 +310,17 @@ void loop() {
   if (Xbox.XboxOneConnected) {
     leftJoystick();
     leftTrigger();
+    rightJoystick();
+    rightTrigger();
     Serial.println();
   }
   else {
     Serial.println("ERROR: No controller input");
   }
-  if (Serial.available())            processSyncMessage(); 
-  if (timeStatus()!= timeNotSet)     digitalClockDisplay();  
-  if (timeStatus() == timeSet)       digitalWrite(TIMESYNCLEDPIN, HIGH); // LED on if synced
-  else                               digitalWrite(TIMESYNCLEDPIN, LOW);  // LED off if needs refresh
+//  if (Serial.available())            processSyncMessage(); 
+//  if (timeStatus()!= timeNotSet)     digitalClockDisplay();  
+//  if (timeStatus() == timeSet)       digitalWrite(TIMESYNCLEDPIN, HIGH); // LED on if synced
+//  else                               digitalWrite(TIMESYNCLEDPIN, LOW);  // LED off if needs refresh
 
   delay(15);
 }
@@ -333,11 +347,11 @@ void rightJoystick() {
     Serial.print("|");
     Serial.print(power);
 
-    // RIGHTSERVO.writeMicroseconds(power);
+    RIGHTSERVO.writeMicroseconds(power);
   }
   else {
     Serial.print("|0");
-    // RIGHTSERVO.writeMicroseconds(WPMID);
+    RIGHTSERVO.writeMicroseconds(WPMID);
   }
   Serial.print(">");
 }
@@ -387,13 +401,14 @@ void rightTrigger() {
   if(trigger_input > TRIGGERDEADZONE) {
     double power = map(trigger_input, TRIGGERDEADZONE, TRIGGERMAX, ESCMIN, ESCMAX);
 
-    // RIGHTMOTOR.writeMicroseconds(power);
+    RIGHTMOTOR.writeMicroseconds(power);
 
     Serial.print("|");
     Serial.print(power);
   }
   else {
     Serial.print("|0");
+    RIGHTMOTOR.writeMicroseconds(ESCMID);
   }
   Serial.print(">");
 }
@@ -440,15 +455,15 @@ void directionalPad() {
  */
 void dpadMotor() {
   if(Xbox.getButtonClick(UP)) {
-    //BACKMOTOR.writeMicroseconds(ESCMAX - 200);
+    BACKMOTOR.writeMicroseconds(ESCMAX - 200);
     Serial.print("UP");
   }
   else if (Xbox.getButtonClick(DOWN)) {
-    //BACKMOTOR.writeMicroseconds(ESCMIN + 200);
+    BACKMOTOR.writeMicroseconds(ESCMIN + 200);
     Serial.print("DOWN");
   }
   else {
-    //BACKMOTOR.writeMicroseconds(ESCMID);
+    BACKMOTOR.writeMicroseconds(ESCMID);
     Serial.print("NONE");
   }
   Serial.print(">");
@@ -458,7 +473,7 @@ void dpadMotor() {
  *    The back servo does not require as much precision as the side motors. There are
  *    only three settings for the servo: rightmost, leftmost, and equilibrium. Furthermore,
  *    the servo will remain in its current setting unless it is told to change by a
- *    different brutton. To return to equilibrium, the 'X' button on the controller must be
+ *    different button. To return to equilibrium, the 'X' button on the controller must be
  *    pressed.
  */
 void dpadServo() {
@@ -492,14 +507,14 @@ void dpadServo() {
  * data to be much more efficient and organized.
  */
 
-void digitalClockDisplay(){
+//void digitalClockDisplay(){
   // digital clock display of the time printed to the serial monitor
-  Serial.print("Time ");
-  Serial.print(hour());
-  Serial.print(hour());
-  printDigits(minute());
-  printDigits(second());
-}
+//  Serial.print("Time ");
+//  Serial.print(hour());
+//  Serial.print(hour());
+//  printDigits(minute());
+//  printDigits(second());
+//}
 
 /** Formats the time outputted by the serial monitor in a comprehensive way >>
  *  This function puts the inputted time in the correct format and allows the 
@@ -507,14 +522,14 @@ void digitalClockDisplay(){
  */
 
 
-void printDigits(int digits){
+//void printDigits(int digits){
   // utility function for digital clock display: prints preceding colon and leading 0 in front of the hours
   
-  Serial.print(":");
-  if(digits < 10)
-    Serial.print('0');
-  Serial.print(digits);
-}
+//  Serial.print(":");
+//  if(digits < 10)
+//    Serial.print('0');
+//  Serial.print(digits);
+//}
 
 /** Syncs the time on an electronic device to the time on the serial monitor >>
  * This message syncs PC time to the serial monitor in order to allow 
@@ -525,17 +540,17 @@ void printDigits(int digits){
  * to help understand the robot's power efficiency and usage over time as they drive
  */
 
-void processSyncMessage() {
-  unsigned long pctime;
-  const unsigned long DEFAULT_TIME = 1357041600; // Jan 1 2019
+//void processSyncMessage() {
+//  unsigned long pctime;
+//  const unsigned long DEFAULT_TIME = 1357041600; // Jan 1 2019
 
-  if(Serial.find(TIME_HEADER)) {
-     pctime = Serial.parseInt();
-     if( pctime >= DEFAULT_TIME) { // check the integer is a valid time (greater than Jan 1 2019)
-       setTime(pctime); // Sync Arduino clock to the time received on the serial port
-     }
-  }
-}//might add time parser back
+//  if(Serial.find(TIME_HEADER)) {
+//     pctime = Serial.parseInt();
+//     if( pctime >= DEFAULT_TIME) { // check the integer is a valid time (greater than Jan 1 2019)
+//       setTime(pctime); // Sync Arduino clock to the time received on the serial port
+//     }
+//  }
+//}//might add time parser back
 
 
 
