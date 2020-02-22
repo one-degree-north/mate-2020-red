@@ -485,11 +485,11 @@ void dpadServo() {
 
 
 /** Places timestamps for all power-mapping values from the controller >> 
- *    For every power-mapping value that the serial monitor outputs
- *    the following code generates time stamps to mark the time at which each power
- *    value is used and displays it alongside each power value. This data will later be used in 
- *    conjunction with the time values to allow the driver to visualize how much power they are using and 
- *    increase their efficiency based on analyzing these values.
+ * For every power-mapping value that the serial monitor outputs
+ * the digitalClockDisplay() method generates time stamps alongside the regular 
+ * output of power-levels of the motors. This provides a standard timekeeping
+ * mechanism that will allow for mathematical manipulations and processing the time-data against the power-level
+ * data to be much more efficient and organized.
  */
 
 void digitalClockDisplay(){
@@ -516,11 +516,13 @@ void printDigits(int digits){
   Serial.print(digits);
 }
 
-/**Syncs the time on an electronic device to the time on the serial monitor >>
- * This message syncs the time on the PC or other monitor device with time on it to
- * the serial monitor in order to allow the serial monitor to output the time alongside
- * each mapped power level, making it easier to store data aboyt the relationship between time
- * and power level.
+/** Syncs the time on an electronic device to the time on the serial monitor >>
+ * This message syncs PC time to the serial monitor in order to allow 
+ * the serial monitor to incrementally output time values as the power-levels
+ * from the T100 thrusters are also outputted. Through doing so, 
+ * an easier mechanism to plot the relationship between time passed
+ * and change in power-level, which could be used by the driver 
+ * to help understand the robot's power efficiency and usage over time as they drive
  */
 
 void processSyncMessage() {
