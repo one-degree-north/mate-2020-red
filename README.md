@@ -29,6 +29,8 @@ Wire.h - **Wire**
 
 XBOXONE.h - [**USB Host Shield**](https://github.com/felis/USB_Host_Shield_2.0)
 
+TimeLib.h - *Time*
+
 ~~ADXL345.h - **Accelerometer_ADXL345**~~
 
 ~~ITG3200.h - **Grove - 3-Axis Digital Gyro**~~

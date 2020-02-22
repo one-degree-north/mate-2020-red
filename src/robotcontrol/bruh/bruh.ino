@@ -65,8 +65,8 @@ Servo BACKSERVO;                            // Object to control the rear servo
 #define JOYSTICKDEADZONE 4000               // The value that needs to be exceeded to start sending power to the servo
 
 // MOTOR AND SERVO CONSTANTS
-#define ESCMIN 1000                         // The minimum value of writeMicroseconds for the motor to be fully powered in reverse
-#define ESCMID 1500                         // The default value of writeMicroseconds for the motor to remain still
+#define ESCMIN 1100                         // The minimum value of writeMicroseconds for the motor to be fully powered in reverse
+#define ESCMID 1900                         // The default value of writeMicroseconds for the motor to remain still
 #define ESCMAX 2000                         // The maximum value of writeMicroseconds for the motor to be fully powered
 #define WPMIN 900                           // The minimum value of writeMicroseconds for the servo to be in min position
 #define WPMID 1500                          // The default value of writeMicroseconds for the servo to be in equilibrium position
