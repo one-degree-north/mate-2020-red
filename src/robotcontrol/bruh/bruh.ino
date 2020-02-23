@@ -46,7 +46,7 @@ Servo BACKSERVO;                            // Object to control the rear servo
 //Revision 1.3 (DEV-09947)
 #define MAX_RESET      7                    // MAX3421E pin 12
 #define MAX_GPX        8                    // MAX3421E pin 17
-#define TIMESYNCLEDPIN 20                   // Pin to display whether clock is synced
+#define WRITEDELAY     21                   // Delay between loops in void loop()
 
 // PIN CONSTANTS
 #define LEFTMOTORPIN  6                     // Pin the LEFTMOTOR to a PWM pin
@@ -54,7 +54,7 @@ Servo BACKSERVO;                            // Object to control the rear servo
 #define RIGHTMOTORPIN 9                     // Pin the RIGHTMOTOR to a PWM pin
 #define RIGHTSERVOPIN 3                     // Pin the RIGHTMOTOR to a PWM pin
 #define BACKMOTORPIN  7                     // Pin the RIGHTMOTOR to a PWM pin
-#define BACKSERVOPIN  4                     // Pin the RIGHTMOTOR to a PWM pin
+#define BACKSERVOPIN  10                    // Pin the RIGHTMOTOR to a PWM pin
 
 // CONTROLLER CONSTANTS
 #define TRIGGERMAX 1023                     // The maximum value a controller trigger returns when fully pressed
@@ -66,8 +66,8 @@ Servo BACKSERVO;                            // Object to control the rear servo
 
 // MOTOR AND SERVO CONSTANTS
 #define ESCMIN 1100                         // The minimum value of writeMicroseconds for the motor to be fully powered in reverse
-#define ESCMID 1900                         // The default value of writeMicroseconds for the motor to remain still
-#define ESCMAX 2000                         // The maximum value of writeMicroseconds for the motor to be fully powered
+#define ESCMID 1500                         // The default value of writeMicroseconds for the motor to remain still
+#define ESCMAX 1900                         // The maximum value of writeMicroseconds for the motor to be fully powered
 #define WPMIN 900                           // The minimum value of writeMicroseconds for the servo to be in min position
 #define WPMID 1500                          // The default value of writeMicroseconds for the servo to be in equilibrium position
 #define WPMAX 2100                          // The maximum value of writeMicroseconds for the servo to be in max position
@@ -84,8 +84,8 @@ void setup() {
   setAllPwm();
   secondAttachAndPin();
   stopTest();
-  //Serial.println(digitalClockDisplay())
 }
+
 /** Attaches motors and servos to their respective pins on the Arduino
  *    This is needed to be able to send power to each motor and servo. This should only
  *    be called once; it is not needed to set the pins repeatedly.
@@ -312,17 +312,13 @@ void loop() {
     leftTrigger();
     rightJoystick();
     rightTrigger();
+    directionalPad();
     Serial.println();
   }
   else {
     Serial.println("ERROR: No controller input");
   }
-//  if (Serial.available())            processSyncMessage(); 
-//  if (timeStatus()!= timeNotSet)     digitalClockDisplay();  
-//  if (timeStatus() == timeSet)       digitalWrite(TIMESYNCLEDPIN, HIGH); // LED on if synced
-//  else                               digitalWrite(TIMESYNCLEDPIN, LOW);  // LED off if needs refresh
-
-  delay(15);
+  delay(WRITEDELAY);
 }
 
 
@@ -341,8 +337,8 @@ void rightJoystick() {
   Serial.print(joystick_input);
   if (joystick_input > JOYSTICKDEADZONE || joystick_input < -1 * JOYSTICKDEADZONE) {
     double power;
-    if(joystick_input > 0) power = map(joystick_input, JOYSTICKDEADZONE, JOYSTICKMAX, WPMID, WPMAX);
-    else                   power = map(joystick_input, JOYSTICKMIN, -1*JOYSTICKDEADZONE, WPMIN, WPMID);
+    if(joystick_input > 0) power = map(joystick_input, JOYSTICKDEADZONE, JOYSTICKMAX, WPMID, WPMIN);
+    else                   power = map(joystick_input, JOYSTICKMIN, -1*JOYSTICKDEADZONE, WPMAX, WPMIN);
 
     Serial.print("|");
     Serial.print(power);
@@ -399,7 +395,7 @@ void rightTrigger() {
   Serial.print("R2Trigger:");
   Serial.print(trigger_input);
   if(trigger_input > TRIGGERDEADZONE) {
-    double power = map(trigger_input, TRIGGERDEADZONE, TRIGGERMAX, ESCMIN, ESCMAX);
+    double power = map(trigger_input, TRIGGERDEADZONE, TRIGGERMAX, ESCMAX, ESCMID);
 
     RIGHTMOTOR.writeMicroseconds(power);
 
@@ -426,7 +422,7 @@ void leftTrigger() {
   Serial.print("L2Trigger:");
   Serial.print(trigger_input);
   if(trigger_input > TRIGGERDEADZONE) {
-    double power = map(trigger_input, TRIGGERDEADZONE, TRIGGERMAX, ESCMIN, ESCMAX);
+    double power = map(trigger_input, TRIGGERDEADZONE, TRIGGERMAX, ESCMID, ESCMAX);
 
     LEFTMOTOR.writeMicroseconds(power);
     //TODO: Bumper take make value negative
@@ -477,82 +473,20 @@ void dpadMotor() {
  *    pressed.
  */
 void dpadServo() {
-  int setting = 0;
-  if(Xbox.getButtonClick(RIGHT))        setting = 1; 
-  else if (Xbox.getButtonClick(LEFT))   setting = 2; 
-  else if (Xbox.getButtonClick(X))      setting = 0;
-
-  if(setting == 1) {
+  if(Xbox.getButtonClick(RIGHT)) {
     BACKSERVO.writeMicroseconds(WPMAX);
     Serial.print("RIGHT");
   }
-  else if (setting == 2) {
+  else if (Xbox.getButtonClick(LEFT)) {
     BACKSERVO.writeMicroseconds(WPMIN);
     Serial.print("LEFT");
   }
-  else if (setting == 0) {
+  else if (Xbox.getButtonClick(X)) {
     BACKSERVO.writeMicroseconds(WPMID);
     Serial.print("NONE");
   }
-
   Serial.print(">");
 }
-
-
-/** Places timestamps for all power-mapping values from the controller >> 
- * For every power-mapping value that the serial monitor outputs
- * the digitalClockDisplay() method generates time stamps alongside the regular 
- * output of power-levels of the motors. This provides a standard timekeeping
- * mechanism that will allow for mathematical manipulations and processing the time-data against the power-level
- * data to be much more efficient and organized.
- */
-
-//void digitalClockDisplay(){
-  // digital clock display of the time printed to the serial monitor
-//  Serial.print("Time ");
-//  Serial.print(hour());
-//  Serial.print(hour());
-//  printDigits(minute());
-//  printDigits(second());
-//}
-
-/** Formats the time outputted by the serial monitor in a comprehensive way >>
- *  This function puts the inputted time in the correct format and allows the 
- *  serial monitor to process the pc time in a constant templated format.
- */
-
-
-//void printDigits(int digits){
-  // utility function for digital clock display: prints preceding colon and leading 0 in front of the hours
-  
-//  Serial.print(":");
-//  if(digits < 10)
-//    Serial.print('0');
-//  Serial.print(digits);
-//}
-
-/** Syncs the time on an electronic device to the time on the serial monitor >>
- * This message syncs PC time to the serial monitor in order to allow 
- * the serial monitor to incrementally output time values as the power-levels
- * from the T100 thrusters are also outputted. Through doing so, 
- * an easier mechanism to plot the relationship between time passed
- * and change in power-level, which could be used by the driver 
- * to help understand the robot's power efficiency and usage over time as they drive
- */
-
-//void processSyncMessage() {
-//  unsigned long pctime;
-//  const unsigned long DEFAULT_TIME = 1357041600; // Jan 1 2019
-
-//  if(Serial.find(TIME_HEADER)) {
-//     pctime = Serial.parseInt();
-//     if( pctime >= DEFAULT_TIME) { // check the integer is a valid time (greater than Jan 1 2019)
-//       setTime(pctime); // Sync Arduino clock to the time received on the serial port
-//     }
-//  }
-//}//might add time parser back
-
-
 
 /** [DEPRECATED | DO NOT USE] Prints the values of the gyroscope
  *    This allows us to understand the orientation of the robot underwater
