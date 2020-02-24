@@ -29,22 +29,27 @@ Wire.h - **Wire**
 
 XBOXONE.h - [**USB Host Shield**](https://github.com/felis/USB_Host_Shield_2.0)
 
-TimeLib.h - *Time*
-
-~~ADXL345.h - **Accelerometer_ADXL345**~~
-
-~~ITG3200.h - **Grove - 3-Axis Digital Gyro**~~
-
+TimeLib.h - [**Time**](https://github.com/PaulStoffregen/Time)
 
 ### Hardware:
 
 * The Schematics folder has the electric schematics in it
 
-Our current hardware is:
-Main - Arduino Mega
+##### Our current hardware is:
+- Control Station
+  - Raspberry Pi 4 B 2GB
+  - *Monitor - TBD*
+  - *Keyboard and mouse - TBD*
 
-USB Host - USB Host Shield Keyes
+- Motor and I/O Control: Arduino Mega 2560 with:
+  - USB Host - USB Host Shield Keyes
+  - ESC - Blue 20A Basic ESC *x3*
 
-~~Master - Arduino Uno SMD Edition~~ (Not in use)
+- Sensors
+  - Orientation Sensor Processing and Communication: Adafruit Trinket M0
 
-~~Slave - Arduino Uno SMD Edition~~ (Not in use)
+- Motors and Servo
+  - Blue Robotics T100 thruster *x3*
+  - KST BLS662WP *x2*
+  - Goolsky DSSERVO DS3225 25KG Digital Servo *x2*
+  
