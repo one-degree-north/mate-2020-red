@@ -35,7 +35,7 @@ TimeLib.h - [**Time**](https://github.com/PaulStoffregen/Time)
 
 * The Schematics folder has the electric schematics in it
 
-##### Our current hardware is:
+#### Our current hardware is:
 - Control Station
   - Raspberry Pi 4 B 2GB
   - *Monitor - TBD*
