@@ -31,20 +31,14 @@ XBOXONE.h - [**USB Host Shield**](https://github.com/felis/USB_Host_Shield_2.0)
 
 TimeLib.h - *Time*
 
-~~ADXL345.h - **Accelerometer_ADXL345**~~
-
-~~ITG3200.h - **Grove - 3-Axis Digital Gyro**~~
-
-
 ### Hardware:
 
 * The Schematics folder has the electric schematics in it
 
 Our current hardware is:
-Main - Arduino Mega
-
-USB Host - USB Host Shield Keyes
-
-~~Master - Arduino Uno SMD Edition~~ (Not in use)
-
-~~Slave - Arduino Uno SMD Edition~~ (Not in use)
+Control Station: Raspberry Pi 4 B 2GB
+Motor and I/O Control: Arduino Mega 2560
+  USB Host - USB Host Shield Keyes
+  ESC - Blue 20A Basic ESC x 3
+Orientation Sensor Processing and Communication: Adafruit Trinket M0
+  Orientation Sensor: 9DOF BNO055 Adafruit Breakout
