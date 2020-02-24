@@ -9,7 +9,7 @@ The Mate Red Repo is divided into designs and code
 
 
 
-### Code:
+### Code
 
 bruh/bruh.ino -- Main code with controller configuration
 
@@ -31,7 +31,7 @@ XBOXONE.h - [**USB Host Shield**](https://github.com/felis/USB_Host_Shield_2.0)
 
 TimeLib.h - [**Time**](https://github.com/PaulStoffregen/Time)
 
-### Hardware:
+### Hardware
 
 ##### The Schematics folder has the electric schematics in it
 
