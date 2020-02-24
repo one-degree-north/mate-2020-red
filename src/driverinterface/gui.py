@@ -8,68 +8,47 @@ from pathlib import Path
 from time import sleep
 import pymysql as sql
 import mysql.connector
-import serial
 import time
-
-mydb = mysql.connector.connect(
-    host = "localhost",
-    user = "root",
-    passwd = "password123",
-    database="testdb"
-    )
+import serial
+from datetime import time
 
 arduino = serial.Serial('/dev/cu.usbmodem141401', 115200)
 data = arduino.readline()
-time.sleep(1) # wait before reading next line tabbed split info
-data = arduino.readline()
-pieces = data.split(">")
-
-pieces[0] = time
-pieces[1] = power_level
-
-with mydb:
-    mycursor = mydb.cursor()
-    # mycursor.execute("CREATE TABLE output(power_level INTEGER(10), time INTEGER(10))") 
-    mycursor.execute("""INSERT INTO output VALUES('',%s,%s)""", (power_level, time))
-    mydb.commit()
-    mycursor.close() 
-
+pieces = data.split("|")
+power = []
+for i in range(len(pieces)):
+    if i>0:
+        sub_array = pieces[i].split(">")
+        power.append(sub_array[0])
+    else:
+        i+=1
 
 class Application(tk.Frame):
     def___init____(self, master=None)
     super().____init____(master)
-    new_window = Tkinter.Tk()
+    new_window = Tk()
     new_window.title("Graph Monitor")
-    parser_input = []
-    time_input = []
-    mycursor = x.mydb.mycursor()
-    parser_input.append(mycursor.execute("SELECT power_level.*")) #recieves all of the input and plugs it into parser_input array
-    time_input.append(mycursor.execute("SELECT time.*"))
-    root=Tk()
-    labels = [0]
-    nums = [0]
-    time_counter = 0
-    angle_new = ((parser_input[i]-1000)/1000)*360
-    level = ax.set_label(parser_input)
-    def update_graphs(parser_input):
-        for i in range(0, len(parser_input)):
-            while parser_input<1500 and parser_input>1000:
-                plt.pie([2000-parser_input[i], parser_input[i]],colors='black', startangle=0) #look into this more
-                plt.pause(0.001)
-                plt.draw() #Used instead of show for "animation"
-                sleep(1)
-            while parser_input>1500 and parser_input<2000:
-                start_time = time_input[i]
-                plt.pie([parser_input[i], 2000-parser_input[i]],colors='blue',startangle=angle_new) #look into this more
-                plt.pause(0.001)
-                plt.draw() #Used instead of show for "animation"
-                sleep(1)
-                if parser_input[i+1]<1500:
-                    end_time = time_input[i+1]
-                time_counter = end_time - start_time
-        print time_counter
+    time_counter=0
+    while True:
+        start = datetime.now() #(hour, minute, second, microsecond) --> format in which time is stored
+        microsecond_start = (((start.minute*60)+(start.hour*60*60)+(start.second))*1000000) + start.microsecond
+        if (((((datetime.now().minute)*60 + datetime.now().second + ((datetime.now().hour)*60*60))*1000000) + datetime.now().microsecond) - microsecond_start) mod 21 == 0:
+            for i in range(len(power)):
+                angle_new = ((power[i]-1000)/1000)*360
+                level = ax.set_label(power[i])
+                while power[i]<1500 and power[i]>1000:
+                    plt.pie([2000-power[i], power[i]],colors='black', startangle=0) #look into this more
+                    plt.pause(0.001)
+                    plt.draw() #Used instead of show for "animation"
+                while power[i]>1500 and power[i]<2000:
+                    start_time = (((((datetime.now().minute)*60 + datetime.now().second + ((datetime.now().hour)*60*60))*1000000) + datetime.now().microsecond)
+                    plt.pie([power[i], 2000-power[i]],colors='blue',startangle=angle_new) #look into this more
+                    plt.pause(0.001)
+                    plt.draw() #Used instead of show for "animation"
+                    if power[i]<1500:
+                        end_time = (((((datetime.now().minute)*60 + datetime.now().second + ((datetime.now().hour)*60*60))*1000000) + datetime.now().microsecond)
+                        time_counter = end_time - start_time              
+    `
 
-            
-    update_graphs(parser_input, time_input)
 app = GraphPage()
-app.mainloop();
+app.mainloop()
