@@ -9,7 +9,7 @@ The Mate Red Repo is divided into designs and code
 
 
 
-### Code:
+### Code
 
 bruh/bruh.ino -- Main code with controller configuration
 
@@ -29,22 +29,26 @@ Wire.h - **Wire**
 
 XBOXONE.h - [**USB Host Shield**](https://github.com/felis/USB_Host_Shield_2.0)
 
-TimeLib.h - *Time*
+TimeLib.h - [**Time**](https://github.com/PaulStoffregen/Time)
 
-~~ADXL345.h - **Accelerometer_ADXL345**~~
+### Hardware
 
-~~ITG3200.h - **Grove - 3-Axis Digital Gyro**~~
+##### The Schematics folder has the electric schematics in it
 
+- Control Station
+  - Raspberry Pi 4 B 2GB
+  - *Monitor - TBD*
+  - *Keyboard and mouse - TBD*
 
-### Hardware:
+- Motor and I/O Control: Arduino Mega 2560 with:
+  - USB Host - USB Host Shield Keyes
+  - ESC - Blue 20A Basic ESC *x3*
 
-* The Schematics folder has the electric schematics in it
+- Sensors
+  - Orientation Sensor Processing and Communication: Adafruit Trinket M0
 
-Our current hardware is:
-Main - Arduino Mega
-
-USB Host - USB Host Shield Keyes
-
-~~Master - Arduino Uno SMD Edition~~ (Not in use)
-
-~~Slave - Arduino Uno SMD Edition~~ (Not in use)
+- Motors and Servo
+  - Blue Robotics T100 thruster *x3*
+  - KST BLS662WP *x2*
+  - Goolsky DSSERVO DS3225 25KG Digital Servo *x2*
+  
