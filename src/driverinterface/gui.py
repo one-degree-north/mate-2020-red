@@ -2,12 +2,6 @@ import Tkinter as tkinter
 from matplotlib import pyplot as plt
 import matplotlib.colors as mcolors
 from matplotlib.animation import FuncAnimation
-import pymysql as sql 
-import mysql.connector
-import serial
-from pathlib import Path
-import pymysql as sql
-import mysql.connector
 import serial
 from datetime import time
 from matplotlib.backends import FigureCanvasTkAgg
