@@ -44,33 +44,33 @@ Servo BACKMOTOR;                            // Object to control the rear motor
 Servo BACKSERVO;                            // Object to control the rear servo
 
 //Revision 1.3 (DEV-09947)
-#define MAX_RESET      7                    // MAX3421E pin 12
-#define MAX_GPX        8                    // MAX3421E pin 17
-#define WRITEDELAY     21                   // Delay between loops in void loop()
+#define MAX_RESET         7                 // MAX3421E pin 12
+#define MAX_GPX           8                 // MAX3421E pin 17
+#define WRITEDELAY        21                // Delay between loops in void loop()
 
 // PIN CONSTANTS
-#define LEFTMOTORPIN  6                     // Pin the LEFTMOTOR to a PWM pin
-#define LEFTSERVOPIN  5                     // Pin the LEFTSERVO to a PWM pin
-#define RIGHTMOTORPIN 9                     // Pin the RIGHTMOTOR to a PWM pin
-#define RIGHTSERVOPIN 3                     // Pin the RIGHTMOTOR to a PWM pin
-#define BACKMOTORPIN  7                     // Pin the RIGHTMOTOR to a PWM pin
-#define BACKSERVOPIN  10                    // Pin the RIGHTMOTOR to a PWM pin
+#define LEFTMOTORPIN      6                 // Pin the LEFTMOTOR to a PWM pin
+#define LEFTSERVOPIN      5                 // Pin the LEFTSERVO to a PWM pin
+#define RIGHTMOTORPIN     9                 // Pin the RIGHTMOTOR to a PWM pin
+#define RIGHTSERVOPIN     3                 // Pin the RIGHTMOTOR to a PWM pin
+#define BACKMOTORPIN      7                 // Pin the RIGHTMOTOR to a PWM pin
+#define BACKSERVOPIN      10                // Pin the RIGHTMOTOR to a PWM pin
 
 // CONTROLLER CONSTANTS
-#define TRIGGERMAX 1023                     // The maximum value a controller trigger returns when fully pressed
-#define TRIGGERMIN 0                        // The minimum value a controller trigger returns when fully released
-#define JOYSTICKMAX 32767                   // The maximum value a controller joystick returns when fully up
-#define JOYSTICKMIN -32768                  // The minimum value a controller joystick returns when fully down
-#define TRIGGERDEADZONE 10                  // The value that needs to be exceeded to start sending power to the motor
-#define JOYSTICKDEADZONE 4000               // The value that needs to be exceeded to start sending power to the servo
+#define TRIGGERMAX        1023              // The maximum value a controller trigger returns when fully pressed
+#define TRIGGERMIN        0                 // The minimum value a controller trigger returns when fully released
+#define JOYSTICKMAX       32767             // The maximum value a controller joystick returns when fully up
+#define JOYSTICKMIN      -32768             // The minimum value a controller joystick returns when fully down
+#define TRIGGERDEADZONE   10                // The value that needs to be exceeded to start sending power to the motor
+#define JOYSTICKDEADZONE  4000              // The value that needs to be exceeded to start sending power to the servo
 
 // MOTOR AND SERVO CONSTANTS
-#define ESCMIN 1100                         // The minimum value of writeMicroseconds for the motor to be fully powered in reverse
-#define ESCMID 1500                         // The default value of writeMicroseconds for the motor to remain still
-#define ESCMAX 1900                         // The maximum value of writeMicroseconds for the motor to be fully powered
-#define WPMIN 900                           // The minimum value of writeMicroseconds for the servo to be in min position
-#define WPMID 1500                          // The default value of writeMicroseconds for the servo to be in equilibrium position
-#define WPMAX 2100                          // The maximum value of writeMicroseconds for the servo to be in max position
+#define ESCMIN            1100              // The minimum value of writeMicroseconds for the motor to be fully powered in reverse
+#define ESCMID            1500              // The default value of writeMicroseconds for the motor to remain still
+#define ESCMAX            1900              // The maximum value of writeMicroseconds for the motor to be fully powered
+#define WPMIN             900               // The minimum value of writeMicroseconds for the servo to be in min position
+#define WPMID             1500              // The default value of writeMicroseconds for the servo to be in equilibrium position
+#define WPMAX             2100              // The maximum value of writeMicroseconds for the servo to be in max position
 
 
 
