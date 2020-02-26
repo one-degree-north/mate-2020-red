@@ -19,23 +19,16 @@
 #include <XBOXONE.h>                        // Library to use the XBox Controller
 #include <Servo.h>                          // Library to use servos and motors
 #include <Wire.h>                           // Library to be able to communicate with I2C / TWI devices
-#include "ITG3200.h"                        // Library to use gyroscopic functions of an accelerometer
-#include <ADXL345.h>                        // Library to use accelerometer functions
 
 // Satisfy the IDE, which needs to see the include statment in the ino too.
 #ifdef dobogusinclude
 #include <spi4teensy3.h>
 #include <SPI.h>
 #endif
-#include <LiquidCrystal.h>
-#include <TimeLib.h>
-
 
 // OBJECTS
 USB Usb;                                    // Objoct to establish USB connection between Arduino and computer
 XBOXONE Xbox(&Usb);                         // Object to use USB connection with XBox controller
-ITG3200 gyro;                               // Object to add gyroscopic functionality
-ADXL345 accel;                              // Object to add accelerometer functionality
 Servo RIGHTMOTOR;                           // Object to control the right motor
 Servo RIGHTSERVO;                           // Object to control the right servo
 Servo LEFTMOTOR;                            // Object to control the left motor
@@ -44,35 +37,38 @@ Servo BACKMOTOR;                            // Object to control the rear motor
 Servo BACKSERVO;                            // Object to control the rear servo
 
 //Revision 1.3 (DEV-09947)
-#define MAX_RESET      7                    // MAX3421E pin 12
-#define MAX_GPX        8                    // MAX3421E pin 17
-#define WRITEDELAY     21                   // Delay between loops in void loop()
+#define MAX_RESET         7                 // MAX3421E pin 12
+#define MAX_GPX           8                 // MAX3421E pin 17
+#define WRITEDELAY        21                // Delay between loops in void loop()
 
 // PIN CONSTANTS
-#define LEFTMOTORPIN  6                     // Pin the LEFTMOTOR to a PWM pin
-#define LEFTSERVOPIN  5                     // Pin the LEFTSERVO to a PWM pin
-#define RIGHTMOTORPIN 9                     // Pin the RIGHTMOTOR to a PWM pin
-#define RIGHTSERVOPIN 3                     // Pin the RIGHTMOTOR to a PWM pin
-#define BACKMOTORPIN  7                     // Pin the RIGHTMOTOR to a PWM pin
-#define BACKSERVOPIN  10                    // Pin the RIGHTMOTOR to a PWM pin
+#define LEFTMOTORPIN      6                 // Pin the LEFTMOTOR to a PWM pin
+#define LEFTSERVOPIN      5                 // Pin the LEFTSERVO to a PWM pin
+#define RIGHTMOTORPIN     9                 // Pin the RIGHTMOTOR to a PWM pin
+#define RIGHTSERVOPIN     3                 // Pin the RIGHTMOTOR to a PWM pin
+#define BACKMOTORPIN      7                 // Pin the RIGHTMOTOR to a PWM pin
+#define BACKSERVOPIN      10                // Pin the RIGHTMOTOR to a PWM pin
 
 // CONTROLLER CONSTANTS
-#define TRIGGERMAX 1023                     // The maximum value a controller trigger returns when fully pressed
-#define TRIGGERMIN 0                        // The minimum value a controller trigger returns when fully released
-#define JOYSTICKMAX 32767                   // The maximum value a controller joystick returns when fully up
-#define JOYSTICKMIN -32768                  // The minimum value a controller joystick returns when fully down
-#define TRIGGERDEADZONE 10                  // The value that needs to be exceeded to start sending power to the motor
-#define JOYSTICKDEADZONE 4000               // The value that needs to be exceeded to start sending power to the servo
+#define TRIGGERMAX        1023              // The maximum value a controller trigger returns when fully pressed
+#define TRIGGERMIN        0                 // The minimum value a controller trigger returns when fully released
+#define JOYSTICKMAX       32767             // The maximum value a controller joystick returns when fully up
+#define JOYSTICKMIN      -32768             // The minimum value a controller joystick returns when fully down
+#define TRIGGERDEADZONE   10                // The value that needs to be exceeded to start sending power to the motor
+#define JOYSTICKDEADZONE  4000              // The value that needs to be exceeded to start sending power to the servo
 
 // MOTOR AND SERVO CONSTANTS
-#define ESCMIN 1100                         // The minimum value of writeMicroseconds for the motor to be fully powered in reverse
-#define ESCMID 1500                         // The default value of writeMicroseconds for the motor to remain still
-#define ESCMAX 1900                         // The maximum value of writeMicroseconds for the motor to be fully powered
-#define WPMIN 900                           // The minimum value of writeMicroseconds for the servo to be in min position
-#define WPMID 1500                          // The default value of writeMicroseconds for the servo to be in equilibrium position
-#define WPMAX 2100                          // The maximum value of writeMicroseconds for the servo to be in max position
+#define ESCMIN            1100              // The minimum value of writeMicroseconds for the motor to be fully powered in reverse
+#define ESCMID            1500              // The default value of writeMicroseconds for the motor to remain still
+#define ESCMAX            1900              // The maximum value of writeMicroseconds for the motor to be fully powered
+#define WPMIN             900               // The minimum value of writeMicroseconds for the servo to be in min position
+#define WPMID             1500              // The default value of writeMicroseconds for the servo to be in equilibrium position
+#define WPMAX             2100              // The maximum value of writeMicroseconds for the servo to be in max position
 
-
+// MOTOR AND SERVO DRIVE SETTINGS
+#define ESCDRIVEMIN 1300
+#define ESCDRIVEMAX 1700
+int rear_servo_setting = 0;
 
 
 // SETUP
@@ -216,71 +212,6 @@ void servoPin(Servo servo, int pin) {
   Serial.println(" complete.");
 }
 
-/** [DEPRECATED | DO NOT USE] initializes the gyro
- * 
- */
-void initGyro() {
-  gyro.init();
-  Serial.println("Calibrating Gyro");
-  gyro.zeroCalibrate(200, 10);
-  Serial.println("Gyro calibrated");
-}
-
-/** [DEPRECATED | DO NOT USE] initializes the accelerometer
- * 
- */
-void initAccelerometer() {
-  Serial.println("Initializing accelerometer");
-  
-  accel.powerOn();
-  //set activity/ inactivity thresholds (0-255)
-  accel.setActivityThreshold(75); //62.5mg per increment
-  accel.setInactivityThreshold(75); //62.5mg per increment
-  accel.setTimeInactivity(10); // how many seconds of no activity is inactive?
- 
-  //look of activity movement on this axes - 1 == on; 0 == off 
-  accel.setActivityX(1);
-  accel.setActivityY(1);
-  accel.setActivityZ(1);
- 
-  //look of inactivity movement on this axes - 1 == on; 0 == off
-  accel.setInactivityX(1);
-  accel.setInactivityY(1);
-  accel.setInactivityZ(1);
- 
-  //look of tap movement on this axes - 1 == on; 0 == off
-  accel.setTapDetectionOnX(0);
-  accel.setTapDetectionOnY(0);
-  accel.setTapDetectionOnZ(1);
- 
-  //set values for what is a tap, and what is a double tap (0-255)
-  accel.setTapThreshold(50); //62.5mg per increment
-  accel.setTapDuration(15); //625us per increment
-  accel.setDoubleTapLatency(80); //1.25ms per increment
-  accel.setDoubleTapWindow(200); //1.25ms per increment
- 
-  //set values for what is considered freefall (0-255)
-  accel.setFreeFallThreshold(7); //(5 - 9) recommended - 62.5mg per increment
-  accel.setFreeFallDuration(45); //(20 - 70) recommended - 5ms per increment
- 
-  //setting all interrupts to take place on int pin 1
-  //I had issues with int pin 2, was unable to reset it
-  accel.setInterruptMapping( ADXL345_INT_SINGLE_TAP_BIT,   ADXL345_INT1_PIN );
-  accel.setInterruptMapping( ADXL345_INT_DOUBLE_TAP_BIT,   ADXL345_INT1_PIN );
-  accel.setInterruptMapping( ADXL345_INT_FREE_FALL_BIT,    ADXL345_INT1_PIN );
-  accel.setInterruptMapping( ADXL345_INT_ACTIVITY_BIT,     ADXL345_INT1_PIN );
-  accel.setInterruptMapping( ADXL345_INT_INACTIVITY_BIT,   ADXL345_INT1_PIN );
- 
-  //register interrupt actions - 1 == on; 0 == off  
-  accel.setInterrupt( ADXL345_INT_SINGLE_TAP_BIT, 1);
-  accel.setInterrupt( ADXL345_INT_DOUBLE_TAP_BIT, 1);
-  accel.setInterrupt( ADXL345_INT_FREE_FALL_BIT,  1);
-  accel.setInterrupt( ADXL345_INT_ACTIVITY_BIT,   1);
-  accel.setInterrupt( ADXL345_INT_INACTIVITY_BIT, 1);
-
-  Serial.println("Accelerometer initialized");
-}
-
 void stopTest() {
   Serial.println("starting 7.5s stop test       ||");
   for(int i = 0; i < 30; ++i) {
@@ -395,7 +326,7 @@ void rightTrigger() {
   Serial.print("R2Trigger:");
   Serial.print(trigger_input);
   if(trigger_input > TRIGGERDEADZONE) {
-    double power = map(trigger_input, TRIGGERDEADZONE, TRIGGERMAX, ESCMAX, ESCMID);
+    double power = map(trigger_input, TRIGGERDEADZONE, TRIGGERMAX, ESCMID, ESCDRIVEMIN);
 
     RIGHTMOTOR.writeMicroseconds(power);
 
@@ -422,7 +353,7 @@ void leftTrigger() {
   Serial.print("L2Trigger:");
   Serial.print(trigger_input);
   if(trigger_input > TRIGGERDEADZONE) {
-    double power = map(trigger_input, TRIGGERDEADZONE, TRIGGERMAX, ESCMID, ESCMAX);
+    double power = map(trigger_input, TRIGGERDEADZONE, TRIGGERMAX, ESCMID, ESCDRIVEMIN);
 
     LEFTMOTOR.writeMicroseconds(power);
     //TODO: Bumper take make value negative
@@ -451,11 +382,11 @@ void directionalPad() {
  */
 void dpadMotor() {
   if(Xbox.getButtonClick(UP)) {
-    BACKMOTOR.writeMicroseconds(ESCMAX - 200);
+    BACKMOTOR.writeMicroseconds(ESCDRIVEMAX);
     Serial.print("UP");
   }
   else if (Xbox.getButtonClick(DOWN)) {
-    BACKMOTOR.writeMicroseconds(ESCMIN + 200);
+    BACKMOTOR.writeMicroseconds(ESCDRIVEMIN);
     Serial.print("DOWN");
   }
   else {
@@ -473,49 +404,22 @@ void dpadMotor() {
  *    pressed.
  */
 void dpadServo() {
-  if(Xbox.getButtonClick(RIGHT)) {
-    BACKSERVO.writeMicroseconds(WPMAX);
-    Serial.print("RIGHT");
+  if(Xbox.getButtonClick(RIGHT))        rear_servo_setting = 1;
+  else if (Xbox.getButtonClick(LEFT))   rear_servo_setting = 2;
+  else                                  rear_servo_setting = 0;
+
+  if(rear_servo_setting == 0) {
+      BACKSERVO.writeMicroseconds(WPMIN);
+      Serial.print("LEFT");
   }
-  else if (Xbox.getButtonClick(LEFT)) {
-    BACKSERVO.writeMicroseconds(WPMIN);
-    Serial.print("LEFT");
+  else if (rear_servo_setting == 0) {
+      BACKSERVO.writeMicroseconds(WPMAX);
+      Serial.print("RIGHT");
   }
-  else if (Xbox.getButtonClick(X)) {
-    BACKSERVO.writeMicroseconds(WPMID);
-    Serial.print("NONE");
+  else {
+      BACKSERVO.writeMicroseconds(WPMID);
+      Serial.print("NONE");
   }
+
   Serial.print(">");
-}
-
-/** [DEPRECATED | DO NOT USE] Prints the values of the gyroscope
- *    This allows us to understand the orientation of the robot underwater
- *    and make necessary adjustments during the driving phase. 
- */
-void printGyro() {
-  int16_t x, y, z;
-  gyro.getXYZ(&x, &y, &z);
-  Serial.print(" ");
-  Serial.print(x);
-  Serial.print(" ");
-  Serial.print(y);
-  Serial.print(" ");
-  Serial.print(z);
-}
-
-/** [DEPRECATED | DO NOT USE] Prints the values of the accelerometer
- *    This allows us to understand how fast the robot is travelling when it's
- *    out of sight. It is necessary during the driving phase so we don't
- *    unintentianally crash into anything, which could potentially be
- *    disastrous to the functionality of the robot's components.
- */
-void printAccel() {
-  double xyz[3];
-  accel.getAcceleration(xyz);
-  Serial.print("x-accel: ");
-  Serial.print(xyz[0]);
-  Serial.print("  y-accel: ");
-  Serial.print(xyz[1]);
-  Serial.print("  z-accel: ");
-  Serial.print(xyz[2]);
 }
