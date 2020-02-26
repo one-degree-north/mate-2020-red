@@ -64,6 +64,10 @@ Servo BACKSERVO;                            // Object to control the rear servo
 #define WPMIN             900               // The minimum value of writeMicroseconds for the servo to be in min position
 #define WPMID             1500              // The default value of writeMicroseconds for the servo to be in equilibrium position
 #define WPMAX             2100              // The maximum value of writeMicroseconds for the servo to be in max position
+<<<<<<< HEAD
+=======
+
+>>>>>>> 3f83abf30ad1b52cd3c6bde6359d9196fb7a9e64
 
 // MOTOR AND SERVO DRIVE SETTINGS
 #define ESCDRIVEMIN 1300
