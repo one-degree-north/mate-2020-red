@@ -47,7 +47,7 @@ Servo BACKSERVO;                            // Object to control the rear servo
 #define RIGHTMOTORPIN     9                 // Pin the RIGHTMOTOR to a PWM pin
 #define RIGHTSERVOPIN     3                 // Pin the RIGHTMOTOR to a PWM pin
 #define BACKMOTORPIN      7                 // Pin the RIGHTMOTOR to a PWM pin
-#define BACKSERVOPIN      10                // Pin the RIGHTMOTOR to a PWM pin
+#define BACKSERVOPIN      2                // Pin the RIGHTMOTOR to a PWM pin
 
 // CONTROLLER CONSTANTS
 #define TRIGGERMAX        1023              // The maximum value a controller trigger returns when fully pressed
@@ -64,15 +64,18 @@ Servo BACKSERVO;                            // Object to control the rear servo
 #define WPMIN             900               // The minimum value of writeMicroseconds for the servo to be in min position
 #define WPMID             1500              // The default value of writeMicroseconds for the servo to be in equilibrium position
 #define WPMAX             2100              // The maximum value of writeMicroseconds for the servo to be in max position
-<<<<<<< HEAD
 
-=======
->>>>>>> removed depracated functions, motors now push correct direction
 
 // MOTOR AND SERVO DRIVE SETTINGS
 #define ESCDRIVEMIN 1300
 #define ESCDRIVEMAX 1700
 int rear_servo_setting = 0;
+int rear_motor_setting = 0;
+bool left_reverse = false;
+bool right_reverse = false;
+
+// TESTING SETTINGS
+#define TESTMODE          1                 // 0 = Off, 1 = On, 2 = Alternate
 
 
 // SETUP
@@ -245,8 +248,10 @@ void loop() {
   if (Xbox.XboxOneConnected) {
     leftJoystick();
     leftTrigger();
+    leftReverse();
     rightJoystick();
     rightTrigger();
+    rightReverse();
     directionalPad();
     Serial.println();
   }
@@ -327,10 +332,18 @@ void leftJoystick() {
  */
 void rightTrigger() {
   double trigger_input = Xbox.getButtonPress(R2);
+  double power;
   Serial.print("R2Trigger:");
   Serial.print(trigger_input);
   if(trigger_input > TRIGGERDEADZONE) {
-    double power = map(trigger_input, TRIGGERDEADZONE, TRIGGERMAX, ESCMID, ESCDRIVEMIN);
+    if (!right_reverse) {
+      if (TESTMODE > 0) Serial.print("[STD]");
+      power = map(trigger_input, TRIGGERDEADZONE, TRIGGERMAX, ESCMID, ESCDRIVEMIN);
+    }
+    else {
+      if (TESTMODE > 0) Serial.print("[REV]");
+      power = map(trigger_input, TRIGGERDEADZONE, TRIGGERMAX, ESCMID, ESCDRIVEMAX);
+    }
 
     RIGHTMOTOR.writeMicroseconds(power);
 
@@ -353,12 +366,19 @@ void rightTrigger() {
  *    and disorient the driver.
  */
 void leftTrigger() {
+  double power;
   double trigger_input = Xbox.getButtonPress(L2);
   Serial.print("L2Trigger:");
   Serial.print(trigger_input);
   if(trigger_input > TRIGGERDEADZONE) {
-    double power = map(trigger_input, TRIGGERDEADZONE, TRIGGERMAX, ESCMID, ESCDRIVEMIN);
-
+    if (!right_reverse) {
+      if (TESTMODE > 0) Serial.print("[STD]");
+      power = map(trigger_input, TRIGGERDEADZONE, TRIGGERMAX, ESCMID, ESCDRIVEMAX);
+    }
+    else {
+      if (TESTMODE > 0) Serial.print("[REV]");
+      power = map(trigger_input, TRIGGERDEADZONE, TRIGGERMAX, ESCMID, ESCDRIVEMIN);
+    }
     LEFTMOTOR.writeMicroseconds(power);
     //TODO: Bumper take make value negative
 
@@ -370,6 +390,15 @@ void leftTrigger() {
     LEFTMOTOR.writeMicroseconds(ESCMID);
   }
   Serial.print(">");
+}
+
+void leftReverse() {
+  if (Xbox.getButtonClick(L1))
+    left_reverse = !left_reverse;
+}
+void rightReverse() {
+  if (Xbox.getButtonClick(R1))
+    right_reverse = !right_reverse;
 }
 
 /** Maps the directional pad to the back motor and servo
@@ -385,17 +414,21 @@ void directionalPad() {
  * 
  */
 void dpadMotor() {
-  if(Xbox.getButtonClick(UP)) {
-    BACKMOTOR.writeMicroseconds(ESCDRIVEMAX);
-    Serial.print("UP");
+  if(Xbox.getButtonClick(UP))           rear_servo_setting = 1;
+  else if (Xbox.getButtonClick(DOWN))   rear_servo_setting = 2;
+  else if (Xbox.getButtonClick(X))      rear_servo_setting = 0;
+  
+  if(rear_servo_setting == 2) {
+      BACKSERVO.writeMicroseconds(ESCMAX);
+      Serial.print("LEFT");
   }
-  else if (Xbox.getButtonClick(DOWN)) {
-    BACKMOTOR.writeMicroseconds(ESCDRIVEMIN);
-    Serial.print("DOWN");
+  else if (rear_servo_setting == 1) {
+      BACKSERVO.writeMicroseconds(ESCMIN);
+      Serial.print("RIGHT");
   }
   else {
-    BACKMOTOR.writeMicroseconds(ESCMID);
-    Serial.print("NONE");
+      BACKSERVO.writeMicroseconds(ESCMID);
+      Serial.print("NONE");
   }
   Serial.print(">");
 }
@@ -408,15 +441,16 @@ void dpadMotor() {
  *    pressed.
  */
 void dpadServo() {
+  rear_servo_setting = 0;
   if(Xbox.getButtonClick(RIGHT))        rear_servo_setting = 1;
   else if (Xbox.getButtonClick(LEFT))   rear_servo_setting = 2;
-  else                                  rear_servo_setting = 0;
+  else if (Xbox.getButtonClick(Y))      rear_servo_setting = 0;
 
-  if(rear_servo_setting == 0) {
+  if(rear_servo_setting == 2) {
       BACKSERVO.writeMicroseconds(WPMIN);
       Serial.print("LEFT");
   }
-  else if (rear_servo_setting == 0) {
+  else if (rear_servo_setting == 1) {
       BACKSERVO.writeMicroseconds(WPMAX);
       Serial.print("RIGHT");
   }
