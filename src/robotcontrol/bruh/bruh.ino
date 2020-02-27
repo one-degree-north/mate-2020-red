@@ -229,18 +229,6 @@ void stopTest() {
   Serial.println("setup completed");
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 // Driving phase
 
 void loop() {
