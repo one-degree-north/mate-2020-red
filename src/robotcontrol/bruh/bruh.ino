@@ -47,7 +47,7 @@ Servo BACKSERVO;                            // Object to control the rear servo
 #define RIGHTMOTORPIN     9                 // Pin the RIGHTMOTOR to a PWM pin
 #define RIGHTSERVOPIN     3                 // Pin the RIGHTMOTOR to a PWM pin
 #define BACKMOTORPIN      7                 // Pin the RIGHTMOTOR to a PWM pin
-#define BACKSERVOPIN      2                // Pin the RIGHTMOTOR to a PWM pin
+#define BACKSERVOPIN      2                 // Pin the RIGHTMOTOR to a PWM pin
 
 // CONTROLLER CONSTANTS
 #define TRIGGERMAX        1023              // The maximum value a controller trigger returns when fully pressed
@@ -66,11 +66,11 @@ Servo BACKSERVO;                            // Object to control the rear servo
 #define WPMAX             2100              // The maximum value of writeMicroseconds for the servo to be in max position
 
 // MOTOR AND SERVO DRIVE SETTINGS
-#define ESCDRIVEMIN 1300
-#define ESCDRIVEMAX 1700
-int rear_servo_setting = 0;
-bool left_reverse = false;
-bool right_reverse = false;
+#define ESCDRIVEMIN       1300
+#define ESCDRIVEMAX       1700
+int rear_servo_setting =  0;
+bool left_reverse =       false;
+bool right_reverse =      false;
 
 // TESTING SETTINGS
 #define TESTMODE          1                 // 0 = Off, 1 = On, 2 = Alternate
