@@ -233,6 +233,7 @@ void stopTest() {
 void loop() {
   Usb.Task();
   if (Xbox.XboxOneConnected) {
+    switchSchemeListener();
     if (control_split_scheme) {
       Serial.print("CSS");
       dualServoLeftJoystick();
@@ -256,6 +257,9 @@ void loop() {
   delay(WRITEDELAY);
 }
 
+void switchSchemeListener() {
+    if(Xbox.getButtonClick(X) control_split_scheme = !control_split_scheme;
+}
 
 void dualServoLeftJoystick() {
     double joystick_input = Xbox.getAnalogHat(LeftHatY);
