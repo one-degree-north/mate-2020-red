@@ -257,10 +257,23 @@ void loop() {
   delay(WRITEDELAY);
 }
 
+/** Switches control schemes
+ *    When the X button is pressed on the controller, the control scheme is switched.
+ *    Control Split Scheme (default)
+ *      => Left joystick, both servos.
+ *      => Right joystick, both motors.
+ *    Control Precise Scheme
+ *      => Left and right joystick, both servos.
+ *      => Left and right trigger, both motors.
+ */
 void switchSchemeListener() {
     if(Xbox.getButtonClick(X) control_split_scheme = !control_split_scheme;
 }
 
+/** Maps the left joystick to both servos
+ *    Allows for non-precise control of the servos. This is to limit the amount of
+ *    multi-tasking required of the driver, at the expense of precision.
+ */
 void dualServoLeftJoystick() {
     double joystick_input = Xbox.getAnalogHat(LeftHatY);
     Serial.print("LeftHatY");
@@ -290,6 +303,10 @@ void dualServoLeftJoystick() {
     Serial.print(">");
 }
 
+/** Maps the right joystick to both motors
+ *    Allows for non-precise control of the servos. This is to limit the amount of 
+ *    multi-tasking required of the driver, at the expense of precision.
+ */
 void dualMotorRightJoystick() {
     double joystick_input = Xbox.getAnalogHat(RightHatY);
     Serial.print("RightHatY");
