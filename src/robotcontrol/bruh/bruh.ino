@@ -76,6 +76,9 @@ bool control_split_scheme = true;
 // TESTING SETTINGS
 #define TESTMODE          1                 // 0 = Off, 1 = On, 2 = Alternate
 
+// SERIAL INPUT VARIABLES
+String inputString = "";
+bool inputStringComplete = false;
 
 // SETUP
 
@@ -86,6 +89,36 @@ void setup() {
   setAllPwm();
   secondAttachAndPin();
   stopTest();
+}
+
+// Driving phase
+
+void loop() {
+  Usb.Task();
+  if (Xbox.XboxOneConnected) {
+    switchSchemeListener();
+    if (control_split_scheme)    controlSplitScheme();
+    else                         controlPreciseScheme();
+    externalInput();
+    Serial.println();
+  }
+
+  else {
+    Serial.println("ERROR: No controller input");
+  }
+  delay(WRITEDELAY);
+}
+
+
+
+void serialEvent() {
+  while(Serial.available()) {
+    char inputChar = (char)(Serial.read());
+    inputString += inputChar;
+    if(inputChar == '\n') {
+      inputStringComplete = true;
+    }
+  }
 }
 
 /** Attaches motors and servos to their respective pins on the Arduino
@@ -228,33 +261,21 @@ void stopTest() {
   Serial.println("setup completed");
 }
 
-// Driving phase
+void controlSplitScheme() {
+  Serial.print("CSS");
+  dualServoLeftJoystick();
+  dualMotorRightJoystick();
+}
 
-void loop() {
-  Usb.Task();
-  if (Xbox.XboxOneConnected) {
-    switchSchemeListener();
-    if (control_split_scheme) {
-      Serial.print("CSS");
-      dualServoLeftJoystick();
-      dualMotorRightJoystick();
-    }
-    else {
-      Serial.print("CPS");
-      leftJoystick();
-      leftTrigger();
-      leftReverse();
-      rightJoystick();
-      rightTrigger();
-      rightReverse();
-      directionalPad();
-    }
-    Serial.println();
-  }
-  else {
-    Serial.println("ERROR: No controller input");
-  }
-  delay(WRITEDELAY);
+void controlPreciseScheme() {
+  Serial.print("CPS");
+  leftJoystick();
+  leftTrigger();
+  leftReverse();
+  rightJoystick();
+  rightTrigger();
+  rightReverse();
+  directionalPad();
 }
 
 /** Switches control schemes
@@ -267,7 +288,33 @@ void loop() {
  *      => Left and right trigger, both motors.
  */
 void switchSchemeListener() {
-    if(Xbox.getButtonClick(X) control_split_scheme = !control_split_scheme;
+    if(Xbox.getButtonClick(X)) switchScheme();
+}
+
+void switchScheme() {
+  control_split_scheme = !control_split_scheme;
+}
+
+void externalInput() {
+  if(inputStringComplete) {
+    //ASSUMING A WASDIJKL ORDER
+    const int MAX_KEY_INPUTS = 8;
+    for(int key = 0; key < min(MAX_KEY_INPUTS, inputString.length); ++key) {
+      if(inputString.charAt(key) == '1') {
+        //WRITE WHATEVER IT IS SUPPOSED TO WRITE WITH EXTERNAL OUTPUT
+      }
+    }
+    inputStringComplete = false;
+    inputString = "";
+  }
+}
+
+void externalOutputOn(Servo target) {
+
+}
+
+void externalOutputOff(Servo target) {
+
 }
 
 /** Maps the left joystick to both servos
