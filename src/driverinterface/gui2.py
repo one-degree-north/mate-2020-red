@@ -15,6 +15,13 @@ from pygame.locals import (
     QUIT,
 )
 
+# CONSTANTS
+ARDUINO_BAUDRATE = 115200
+ARDUINO_PORT = '/dev/cu.usbmodem143101'
+
+# SETUP
+ser = serial.Serial(ARDUINO_BAUDRATE, ARDUINO_PORT)
+
 class Screen:
     def __init__(self, width, height): 
         self.width = width
@@ -29,28 +36,11 @@ class Screen:
     def get_size(self):
         return (self.width, self.height)
 
-class SerialConsts:
-    def __init__(self, baudrate, port):
-        self.baudrate = baudrate
-        self.port = port
-
-    def get_baudrate(self):
-        return self.baudrate
-    
-    def get_port(self):
-        return self.port
-
-serial_consts = SerialConsts(115200, '/dev/cu.usbmodem143101')
-
 def main():
     pass
 
 def setup_app():
-    # SETUP CONNECTION WITH ARDUINO SERIAL
-    ARDUINO_BAUDRATE = serialconsts.get_baudrate()
-    ARDUINO_PORT = serialconsts.get_port()
-    ser = serial.Serial(ARDUINO_BAUDRATE, ARDUINO_PORT)
-
+    
     # SETUP PYGAME
     pygame.init()
     pass
