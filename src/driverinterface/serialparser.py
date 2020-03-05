@@ -14,7 +14,7 @@ class SerialParser:
         try:
             read_config()
             ser = serial.Serial(SERIAL_PORT, SERIAL_BAUDRATE)
-            get_motors_servos()
+            add_motors_servos()
             complete_setup()
         except:
             print("Could not initialize serial")
@@ -27,11 +27,14 @@ class SerialParser:
         except:
             print("Could not read config")
 
-    def get_motors_servos(self):
+    def add_motors_servos(self):
         line = self.read_serial_line()
         while(line != "starting 7.5s stop test       ||"):
             a_servo = parse_setup_input(line)
             motors_servos_dict.append(a_servo)
+
+    def get_motor_servos(self):
+        return motors_servos_dict
 
     def complete_setup(self):
         line = self.read_serial_line()
