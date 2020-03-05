@@ -1,5 +1,7 @@
-import serial
-import sys
+import serial, sys
+from time import sleep
+import serialparser
+import arduinoservo
 import pygame
 from pygame.locals import (
     K_w,
@@ -16,14 +18,15 @@ from pygame.locals import (
 )
 
 # CONSTANTS
-ARDUINO_BAUDRATE = 115200
-ARDUINO_PORT = '/dev/cu.usbmodem143101'
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 SCREEN_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
+DELAY_TIME = 0.15
 
-# SETUP
-# ser = serial.Serial(ARDUINO_BAUDRATE, ARDUINO_PORT)
+# MOTORS AND SERVO
+motors_servos = []
+
+# PYGAME VARIABLES
 screen = pygame.display.set_mode(SCREEN_SIZE)
 
 def main():
@@ -32,11 +35,17 @@ def main():
     pass
 
 def setup_app():
-    
-    # SETUP PYGAME
+    ser = SerialParser()
+    while not ser.is_ready_to_read():
+        continue
+    create_motors_servos()
     pygame.init()
-    pass
 
+def create_motors_servos():
+    raw = ser.get_motors_servos()
+    motors_servos = ArduinoServoFactory.create_motors_servos(raw)
+    return motors_servos
+    
 def run_app():
     while True:
         for event in pygame.event.get():
@@ -45,6 +54,12 @@ def run_app():
             elif event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     quit_app()
+        line = read_serial_line()
+        print(line)
+    sleep(DELAY_TIME)
+
+def key_event(key):
+    pass
 
 def quit_app():
     print("Quitting app...")
