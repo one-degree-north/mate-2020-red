@@ -15,10 +15,12 @@ class ArduinoServoFactory:
                 motors_servos.append(servo)
         return motors_servos
 
+    @classmethod
     def make_motor(self, pin):
         motor = Motor("Motor", pin)
         return motor
 
+    @classmethod
     def make_servo(self, pin):
         servo = Servo("Servo", pin)
         return servo
