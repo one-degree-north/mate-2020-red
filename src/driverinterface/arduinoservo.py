@@ -8,16 +8,16 @@ class ArduinoServoFactory:
             servo_type, pin = pair
             servo = None
             if servo_type == "motor":
-                servo = make_motor(pin)
+                servo = self.make_motor(pin)
             elif servo_type == "servo":
-                servo = make_servo(pin)
+                servo = self.make_servo(pin)
             if not servo == None:
                 motors_servos.append(servo)
         return motors_servos
 
     @classmethod
     def make_motor(self, pin):
-        motor = Motor("Motor", pin)
+        motor = Motor("Motor", int(pin))
         return motor
 
     @classmethod
@@ -60,22 +60,6 @@ class ArduinoServo:
     def get_output_equilibrium(self):
         return ArduinoServo.OUTPUT_EQUILIBRIUM
 
-    def init_display(self, xpos, ypos):
-        self.equilibrium_xpos = xpos
-        self.equilibrium_ypos = ypos
-        self.display_rect = pygame.Rect(xpos, ypos, ArduinoServo.DISPLAY_WIDTH, 0)
-
-    def update_display(self):
-        height = map_output_to_height()
-
-    def get_display(self):
-        return display_rect
-
-    def map_output_to_height():
-        height = output - ArduinoServo.OUTPUT_EQUILIBRIUM
-        
-        pass
-
     def is_controllable(self):
         return self.controllable
 
@@ -94,10 +78,27 @@ class Motor(ArduinoServo):
         self.name = name
         self.pin = pin
 
-    def map_output_to_height():
+    def map_output_to_height(self):
         height = self.get_output() - self.get_output_equilibrium()
         height /= (Motor.MAX_OUTPUT_DEVATION / ArduinoServo.MAX_HEIGHT)
         return height
+    
+    def init_display(self, xpos, ypos):
+        self.equilibrium_xpos = xpos
+        self.equilibrium_ypos = ypos
+        self.display_rect = pygame.Rect(xpos, ypos, ArduinoServo.DISPLAY_WIDTH, 0)
+
+    def update_display(self):
+        height = map_output_to_height()
+        ypos = self.equilibrium_ypos
+        if height > 0:
+            ypos -= height
+        height = abs(height)
+        self.display_rect = pygame.Rect(equilibrium_xpos, ypos, ArduinoServo.DISPLAY_WIDTH, height)
+
+    def get_display(self):
+        return display_rect
+
 
 class Servo(ArduinoServo):
     # Constants
@@ -108,7 +109,25 @@ class Servo(ArduinoServo):
         self.name = name
         self.pin = pin
 
-    def map_output_to_height():
+    def map_output_to_height(self):
         height = self.get_output() - self.get_output_equilibrium()
         height /= (Servo.MAX_OUTPUT_DEVIATION / ArduinoServo.MAX_HEIGHT)
         return height
+
+    def init_display(self, xpos, ypos):
+        self.equilibrium_xpos = xpos
+        self.equilibrium_ypos = ypos
+        self.display_rect = pygame.Rect(xpos, ypos, ArduinoServo.DISPLAY_WIDTH, 0)
+
+    def update_display(self):
+        height = map_output_to_height()
+        ypos = self.equilibrium_ypos
+        if(height > 0):
+            ypos -= height
+        height = abs(height)
+        self.display_rect = pygame.Rect(equilibrium_xpos, ypos, ArduinoServo.DISPLAY_WIDTH, height)
+
+    def get_display(self):
+        return display_rect
+
+
