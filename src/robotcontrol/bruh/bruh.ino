@@ -267,7 +267,7 @@ void loop() {
  *      => Left and right trigger, both motors.
  */
 void switchSchemeListener() {
-    if(Xbox.getButtonClick(X) control_split_scheme = !control_split_scheme;
+    if(Xbox.getButtonClick(X)) control_split_scheme = !control_split_scheme;
 }
 
 /** Maps the left joystick to both servos
