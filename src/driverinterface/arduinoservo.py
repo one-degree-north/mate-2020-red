@@ -1,5 +1,28 @@
 import pygame
 
+class ArduinoServoFactory:
+    @classmethod 
+    def create_motors_servos(self, rawarr):
+        motors_servos = []
+        for pair in rawarr:
+            servo_type, pin = pair
+            servo = None
+            if servo_type == "motor":
+                servo = make_motor(pin)
+            elif servo_type == "servo":
+                servo = make_servo(pin)
+            if not servo == None:
+                motors_servos.append(servo)
+        return motors_servos
+
+    def make_motor(self, pin):
+        motor = Motor("Motor", pin)
+        return motor
+
+    def make_servo(self, pin):
+        servo = Servo("Servo", pin)
+        return servo
+
 class ArduinoServo:
     # Constants
     OUTPUT_EQUILIBRIUM = 1500
@@ -18,6 +41,9 @@ class ArduinoServo:
 
     def get_name(self):
         return self.name
+
+    def set_name(self, inp):
+        self.name = inp
 
     def get_pin(self):
         return self.pin
@@ -81,4 +107,6 @@ class Servo(ArduinoServo):
         self.pin = pin
 
     def map_output_to_height():
-        pass
+        height = self.get_output() - self.get_output_equilibrium()
+        height /= (Servo.MAX_OUTPUT_DEVIATION / ArduinoServo.MAX_HEIGHT)
+        return height
