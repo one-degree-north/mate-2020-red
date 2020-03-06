@@ -16,9 +16,9 @@
  */
 
 // LIBRARY IMPORTS
-#include <XBOXONE.h>                        // Library to use the XBox Controller
-#include <Servo.h>                          // Library to use servos and motors
-#include <Wire.h>                           // Library to be able to communicate with I2C / TWI devices
+#include <XBOXONE.h>                          // Library to use the XBox Controller
+#include <Servo.h>                            // Library to use servos and motors
+#include <Wire.h>                             // Library to be able to communicate with I2C / TWI devices
 
 // Satisfy the IDE, which needs to see the include statment in the ino too.
 #ifdef dobogusinclude
@@ -27,52 +27,51 @@
 #endif
 
 // OBJECTS
-USB Usb;                                    // Objoct to establish USB connection between Arduino and computer
-XBOXONE Xbox(&Usb);                         // Object to use USB connection with XBox controller
-Servo RIGHTMOTOR;                           // Object to control the right motor
-Servo RIGHTSERVO;                           // Object to control the right servo
-Servo LEFTMOTOR;                            // Object to control the left motor
-Servo LEFTSERVO;                            // Object to control the left servo
-Servo BACKMOTOR;                            // Object to control the rear motor
-Servo BACKSERVO;                            // Object to control the rear servo
+USB Usb;                                      // Objoct to establish USB connection between Arduino and computer
+XBOXONE Xbox(&Usb);                           // Object to use USB connection with XBox controller
+Servo RIGHTMOTOR;                             // Object to control the right motor
+Servo RIGHTSERVO;                             // Object to control the right servo
+Servo LEFTMOTOR;                              // Object to control the left motor
+Servo LEFTSERVO;                              // Object to control the left servo
+Servo BACKMOTOR;                              // Object to control the rear motor
+Servo BACKSERVO;                              // Object to control the rear servo
 
 //Revision 1.3 (DEV-09947)
-#define MAX_RESET         7                 // MAX3421E pin 12
-#define MAX_GPX           8                 // MAX3421E pin 17
-#define WRITEDELAY        21                // Delay between loops in void loop()
+#define MAX_RESET           7                 // MAX3421E pin 12
+#define MAX_GPX             8                 // MAX3421E pin 17
+#define WRITEDELAY          21                // Delay between loops in void loop()
 
 // PIN CONSTANTS
-#define LEFTMOTORPIN      6                 // Pin the LEFTMOTOR to a PWM pin
-#define LEFTSERVOPIN      5                 // Pin the LEFTSERVO to a PWM pin
-#define RIGHTMOTORPIN     9                 // Pin the RIGHTMOTOR to a PWM pin
-#define RIGHTSERVOPIN     3                 // Pin the RIGHTMOTOR to a PWM pin
-#define BACKMOTORPIN      7                 // Pin the RIGHTMOTOR to a PWM pin
-#define BACKSERVOPIN      2                // Pin the RIGHTMOTOR to a PWM pin
+#define LEFTMOTORPIN        6                 // Pin the LEFTMOTOR to a PWM pin
+#define LEFTSERVOPIN        5                 // Pin the LEFTSERVO to a PWM pin
+#define RIGHTMOTORPIN       9                 // Pin the RIGHTMOTOR to a PWM pin
+#define RIGHTSERVOPIN       3                 // Pin the RIGHTMOTOR to a PWM pin
+#define BACKMOTORPIN        7                 // Pin the RIGHTMOTOR to a PWM pin
+#define BACKSERVOPIN        2                 // Pin the RIGHTMOTOR to a PWM pin
 
 // CONTROLLER CONSTANTS
-#define TRIGGERMAX        1023              // The maximum value a controller trigger returns when fully pressed
-#define TRIGGERMIN        0                 // The minimum value a controller trigger returns when fully released
-#define JOYSTICKMAX       32767             // The maximum value a controller joystick returns when fully up
-#define JOYSTICKMIN      -32768             // The minimum value a controller joystick returns when fully down
-#define TRIGGERDEADZONE   10                // The value that needs to be exceeded to start sending power to the motor
-#define JOYSTICKDEADZONE  4000              // The value that needs to be exceeded to start sending power to the servo
+#define TRIGGERMAX          1023              // The maximum value a controller trigger returns when fully pressed
+#define TRIGGERMIN          0                 // The minimum value a controller trigger returns when fully released
+#define JOYSTICKMAX         32767             // The maximum value a controller joystick returns when fully up
+#define JOYSTICKMIN        -32768             // The minimum value a controller joystick returns when fully down
+#define TRIGGERDEADZONE     10                // The value that needs to be exceeded to start sending power to the motor
+#define JOYSTICKDEADZONE    4000              // The value that needs to be exceeded to start sending power to the servo
 
 // MOTOR AND SERVO CONSTANTS
-#define ESCMIN            1100              // The minimum value of writeMicroseconds for the motor to be fully powered in reverse
-#define ESCMID            1500              // The default value of writeMicroseconds for the motor to remain still
-#define ESCMAX            1900              // The maximum value of writeMicroseconds for the motor to be fully powered
-#define WPMIN             900               // The minimum value of writeMicroseconds for the servo to be in min position
-#define WPMID             1500              // The default value of writeMicroseconds for the servo to be in equilibrium position
-#define WPMAX             2100              // The maximum value of writeMicroseconds for the servo to be in max position
-
+#define ESCMIN              1100              // The minimum value of writeMicroseconds for the motor to be fully powered in reverse
+#define ESCMID              1500              // The default value of writeMicroseconds for the motor to remain still
+#define ESCMAX              1900              // The maximum value of writeMicroseconds for the motor to be fully powered
+#define WPMIN               900               // The minimum value of writeMicroseconds for the servo to be in min position
+#define WPMID               1500              // The default value of writeMicroseconds for the servo to be in equilibrium position
+#define WPMAX               2100              // The maximum value of writeMicroseconds for the servo to be in max position
 
 // MOTOR AND SERVO DRIVE SETTINGS
-#define ESCDRIVEMIN 1300
-#define ESCDRIVEMAX 1700
-int rear_servo_setting = 0;
-int rear_motor_setting = 0;
-bool left_reverse = false;
-bool right_reverse = false;
+#define ESCDRIVEMIN         1300
+#define ESCDRIVEMAX         1700
+int rear_servo_setting =    0;
+bool left_reverse =         false;
+bool right_reverse =        false;
+bool control_split_scheme = true;
 
 // TESTING SETTINGS
 #define TESTMODE          1                 // 0 = Off, 1 = On, 2 = Alternate
@@ -234,13 +233,22 @@ void stopTest() {
 void loop() {
   Usb.Task();
   if (Xbox.XboxOneConnected) {
-    leftJoystick();
-    leftTrigger();
-    leftReverse();
-    rightJoystick();
-    rightTrigger();
-    rightReverse();
-    directionalPad();
+    switchSchemeListener();
+    if (control_split_scheme) {
+      Serial.print("CSS");
+      dualServoLeftJoystick();
+      dualMotorRightJoystick();
+    }
+    else {
+      Serial.print("CPS");
+      leftJoystick();
+      leftTrigger();
+      leftReverse();
+      rightJoystick();
+      rightTrigger();
+      rightReverse();
+      directionalPad();
+    }
     Serial.println();
   }
   else {
@@ -249,6 +257,80 @@ void loop() {
   delay(WRITEDELAY);
 }
 
+/** Switches control schemes
+ *    When the X button is pressed on the controller, the control scheme is switched.
+ *    Control Split Scheme (default)
+ *      => Left joystick, both servos.
+ *      => Right joystick, both motors.
+ *    Control Precise Scheme
+ *      => Left and right joystick, both servos.
+ *      => Left and right trigger, both motors.
+ */
+void switchSchemeListener() {
+    if(Xbox.getButtonClick(X)) control_split_scheme = !control_split_scheme;
+}
+
+/** Maps the left joystick to both servos
+ *    Allows for non-precise control of the servos. This is to limit the amount of
+ *    multi-tasking required of the driver, at the expense of precision.
+ */
+void dualServoLeftJoystick() {
+    double joystick_input = Xbox.getAnalogHat(LeftHatY);
+    Serial.print("LeftHatY");
+    Serial.print(joystick_input);
+    if (joystick_input > JOYSTICKDEADZONE || joystick_input < -1 * JOYSTICKDEADZONE) {
+      double right_power, left_power;
+
+      if(joystick_input > 0) right_power = map(joystick_input, JOYSTICKDEADZONE, JOYSTICKMAX, WPMID, WPMIN);
+      else                   right_power = map(joystick_input, JOYSTICKMIN, -1*JOYSTICKDEADZONE, WPMAX, WPMIN);
+
+      if(joystick_input > 0) power = map(joystick_input, JOYSTICKDEADZONE, JOYSTICKMAX, WPMID, WPMAX);
+      else                   power = map(joystick_input, JOYSTICKMIN, -1*JOYSTICKDEADZONE, WPMIN, WPMID);
+
+      Serial.print("|");
+      Serial.print(right_power);
+      Serial.print("|");
+      Serial.print(left_power);
+
+      RIGHTSERVO.writeMicroseconds(right_power);
+      LEFTSERVO.writeMicroseconds(left_power);
+    }
+    else {
+        Serial.print("|0|0");
+        RIGHTSERVO.writeMicroseconds(WPMID);
+        LEFTSERVO.writeMicroseconds(WPMID);
+    }
+    Serial.print(">");
+}
+
+/** Maps the right joystick to both motors
+ *    Allows for non-precise control of the servos. This is to limit the amount of 
+ *    multi-tasking required of the driver, at the expense of precision.
+ */
+void dualMotorRightJoystick() {
+    double joystick_input = Xbox.getAnalogHat(RightHatY);
+    Serial.print("RightHatY");
+    Serial.print(joystick_input);
+    if (joystick_input > JOYSTICKDEADZONE || joystick_input < -1 * JOYSTICKDEADZONE) {
+      double power;
+
+      power = map(joystick_input, JOYSTICKMIN, JOYSTICKMAX, ESCDRIVEMIN, ESCDRIVEMAX);
+
+      Serial.print("|");
+      Serial.print(power);
+      Serial.print("|");
+      Serial.print(power);
+
+      RIGHTMOTOR.writeMicroseconds(power);
+      LEFTMOTOR.writeMicroseconds(power);
+    }
+    else {
+      Serial.print("|0|0");
+      RIGHTMOTOR.writeMicroseconds(ESCMID);
+      LEFTMOTOR.writeMicroseconds(ESCMID);
+    }
+    Serial.print(">");
+}
 
 
 /** Maps the right joystick to the right servo
@@ -332,7 +414,6 @@ void rightTrigger() {
       if (TESTMODE > 0) Serial.print("[REV]");
       power = map(trigger_input, TRIGGERDEADZONE, TRIGGERMAX, ESCMID, ESCDRIVEMAX);
     }
-
     RIGHTMOTOR.writeMicroseconds(power);
 
     Serial.print("|");
@@ -368,7 +449,6 @@ void leftTrigger() {
       power = map(trigger_input, TRIGGERDEADZONE, TRIGGERMAX, ESCMID, ESCDRIVEMIN);
     }
     LEFTMOTOR.writeMicroseconds(power);
-    //TODO: Bumper take make value negative
 
     Serial.print("|");
     Serial.print(power);
@@ -380,10 +460,19 @@ void leftTrigger() {
   Serial.print(">");
 }
 
+/** Switches the direction of the side motors
+ *    This allows the robot to move forward and backward. The L1 button was selected
+ *    because it is directly above the left trigger, allowing for easy access.
+ */
 void leftReverse() {
   if (Xbox.getButtonClick(L1))
     left_reverse = !left_reverse;
 }
+
+/** Switches the direction of the side motors
+ *    This allows the robot to move forward and backward. The L1 button was selected
+ *    because it is directly above the left trigger, allowing for easy access.
+ */
 void rightReverse() {
   if (Xbox.getButtonClick(R1))
     right_reverse = !right_reverse;
