@@ -16,6 +16,7 @@ class SerialParser:
             ser = serial.Serial(SERIAL_PORT, SERIAL_BAUDRATE)
             add_motors_servos()
             complete_setup()
+            ready_to_read = True
         except:
             print("Could not initialize serial")
 
@@ -43,9 +44,10 @@ class SerialParser:
 
     def parse_setup_input(line):
         contents = line.split(" ")
-        a_servo = contents[0]     # motor/servo should be first in list
-        a_pin = contents[4]       # motor/servo should be fifth in list
-        return (a_servo, a_pin)
+        servo_name = contents[0]  # motor/servo name should be first in list
+        a_servo = contents[1]     # motor/servo should be second in list
+        a_pin = contents[5]       # pin should be sixth in list
+        return (servo_name, a_servo, a_pin)
         
     def read_serial_line(self):
         ser.readline().decode('utf-8')
