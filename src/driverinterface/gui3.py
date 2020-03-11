@@ -32,7 +32,6 @@ screen = pygame.display.set_mode(SCREEN_SIZE)
 def main():
     setup_app()
     run_app()
-    pass
 
 def setup_app():
     ser = SerialParser()
@@ -45,21 +44,22 @@ def create_motors_servos():
     raw = ser.get_motors_servos()
     motors_servos = ArduinoServoFactory.create_motors_servos(raw)
     return motors_servos
-    
+
 def run_app():
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 quit_app()
             elif event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
-                    quit_app()
+                key_event(event.key)
+
         line = read_serial_line()
         print(line)
     sleep(DELAY_TIME)
 
 def key_event(key):
-    pass
+    if key == K_ESCAPE:
+        quit_app()
 
 def quit_app():
     print("Quitting app...")
