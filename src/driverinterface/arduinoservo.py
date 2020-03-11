@@ -3,26 +3,36 @@ import pygame
 class ArduinoServoFactory:
     @classmethod 
     def create_motors_servos(self, rawarr):
+        """
+        Parses the raw list obtained from serial parser into a list of ArduinoServo objects
+        """
         motors_servos = []
-        for pair in rawarr:
-            servo_type, pin = pair
+        for triple in rawarr:
+            servo_name, servo_type, pin = pair
             servo = None
             if servo_type == "motor":
-                servo = self.make_motor(pin)
+                servo = self.make_motor(pin, servo_name)
             elif servo_type == "servo":
-                servo = self.make_servo(pin)
+                servo = self.make_servo(pin, servo_name)
+
             if not servo == None:
                 motors_servos.append(servo)
         return motors_servos
 
     @classmethod
-    def make_motor(self, pin):
-        motor = Motor("Motor", int(pin))
+    def make_motor(self, name, pin):
+        """
+        Returns a motor from a singular parsed input.
+        """
+        motor = Motor(name, int(pin))
         return motor
 
     @classmethod
-    def make_servo(self, pin):
-        servo = Servo("Servo", pin)
+    def make_servo(self, name, pin):
+        """
+        Returns a servo from a singular parsed input.
+        """
+        servo = Servo(name, int(pin))
         return servo
 
 class ArduinoServo:
