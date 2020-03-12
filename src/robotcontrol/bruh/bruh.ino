@@ -286,8 +286,8 @@ void dualServoLeftJoystick() {
       if(joystick_input > 0) right_power = map(joystick_input, JOYSTICKDEADZONE, JOYSTICKMAX, WPMID, WPMIN);
       else                   right_power = map(joystick_input, JOYSTICKMIN, -1*JOYSTICKDEADZONE, WPMAX, WPMIN);
 
-      if(joystick_input > 0) power = map(joystick_input, JOYSTICKDEADZONE, JOYSTICKMAX, WPMID, WPMAX);
-      else                   power = map(joystick_input, JOYSTICKMIN, -1*JOYSTICKDEADZONE, WPMIN, WPMID);
+      if(joystick_input > 0) left_power = map(joystick_input, JOYSTICKDEADZONE, JOYSTICKMAX, WPMID, WPMAX);
+      else                   left_power = map(joystick_input, JOYSTICKMIN, -1*JOYSTICKDEADZONE, WPMIN, WPMID);
 
       Serial.print("|");
       Serial.print(right_power);
