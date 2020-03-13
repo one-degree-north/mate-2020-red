@@ -288,7 +288,7 @@ void controlPreciseScheme() {
  *      => Left and right trigger, both motors.
  */
 void switchSchemeListener() {
-    if(Xbox.getButtonClick(X)) switchScheme();
+  if(Xbox.getButtonClick(X)) switchScheme();
 }
 
 void switchScheme() {

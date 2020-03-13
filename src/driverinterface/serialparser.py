@@ -1,4 +1,4 @@
-import serial
+import serial, re
 
 class SerialParser:
     """
@@ -51,9 +51,26 @@ class SerialParser:
         Adds the information into motors_servos_dict.
         """
         line = self.read_serial_line()
-        while(line != "starting 7.5s stop test       ||"):
+        while(not re.search("^starting", line)):
             a_servo = parse_setup_input(line)
             motors_servos_dict.append(a_servo)
+            line = self.read_serial_line()
+    
+    @classmethod
+    def parse_setup_input(line):
+        """
+        The setup follows the format of name, motor/servo, several words,
+        then the pin. This scrapes the necessary information and returns
+        it as a tuple.
+        """
+        contents = line.split(" ")
+        servo_name = contents[0]  # motor/servo name should be first in list
+        a_servo = contents[1]     # motor/servo should be second in list
+        a_pin = contents[5]       # pin should be sixth in list
+        print(servo_name, end= " ")
+        print("done")
+        return (servo_name, a_servo, a_pin)
+
 
     def get_motor_servos(self):
         """
@@ -81,20 +98,20 @@ class SerialParser:
         a_servo = contents[1]     # motor/servo should be second in list
         a_pin = contents[5]       # pin should be sixth in list
         return (servo_name, a_servo, a_pin)
-        
+
     def read_serial_line(self):
         """
         The serial returns a line in utf-8 format, so it must be decoded
         to become more readable.
         """
         ser.readline().decode('utf-8')
-        
+
     def close_serial(self):
         """
         Must close the serial when quitting the application.
         """
         ser.close()
-    
+
     def get_port(self):
         return SERIAL_PORT()
 
