@@ -8,12 +8,12 @@ class ArduinoServoFactory:
         """
         motors_servos = []
         for triple in rawarr:
-            servo_name, servo_type, pin = pair
+            servo_name, servo_type, pin = triple
             servo = None
             if servo_type == "motor":
-                servo = self.make_motor(pin, servo_name)
+                servo = self.make_motor(servo_name, pin)
             elif servo_type == "servo":
-                servo = self.make_servo(pin, servo_name)
+                servo = self.make_servo(servo_name, pin)
 
             if not servo == None:
                 motors_servos.append(servo)
@@ -36,6 +36,9 @@ class ArduinoServoFactory:
         return servo
 
 class ArduinoServo:
+    """
+    Represents a Servo object in Arduino, which can be either a motor or servo.
+    """
     # Constants
     OUTPUT_EQUILIBRIUM = 1500
     DISPLAY_WIDTH = 30
