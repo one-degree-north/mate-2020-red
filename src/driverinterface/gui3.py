@@ -25,6 +25,7 @@ DELAY_TIME = 0.15
 
 # MOTORS AND SERVO
 motors_servos = []
+controllable_motors_servos = []
 
 # PYGAME VARIABLES
 screen = pygame.display.set_mode(SCREEN_SIZE)
@@ -41,9 +42,12 @@ def setup_app():
     pygame.init()
 
 def create_motors_servos():
-    raw = ser.get_motors_servos()
-    motors_servos = ArduinoServoFactory.create_motors_servos(raw)
-    return motors_servos
+    try:
+        raw = ser.get_motors_servos()
+        motors_servos = ArduinoServoFactory.create_motors_servos(raw)
+        return True
+    except:
+        return False
 
 def run_app():
     while True:
@@ -60,6 +64,22 @@ def run_app():
 def key_event(key):
     if key == K_ESCAPE:
         quit_app()
+    if key == K_w:
+        pass
+    if key == K_a:
+        pass
+    if key == K_s:
+        pass
+    if key == K_d:
+        pass
+    if key == K_i:
+        pass
+    if key == K_k:
+        pass
+    if key == K_j:
+        pass
+    if key == K_l:
+        pass
 
 def quit_app():
     print("Quitting app...")
