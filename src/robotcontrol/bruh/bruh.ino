@@ -214,12 +214,12 @@ void setPwmFrequency(int pin, int divisor) {
  *    and servos have been properly attached to pins.
  */
 void secondAttachAndPin() {
-  motorPin(LEFTMOTOR, LEFTMOTORPIN, "LEFTMOTOR");
   servoPin(LEFTSERVO, LEFTSERVOPIN, "LEFTSERVO");
-  motorPin(RIGHTMOTOR, RIGHTMOTORPIN, "RIGHTMOTOR");
   servoPin(RIGHTSERVO, RIGHTSERVOPIN, "RIGHTSERVO");
-  motorPin(BACKMOTOR, BACKMOTORPIN, "BACKMOTOR");
   servoPin(BACKSERVO, BACKSERVOPIN, "BACKSERVO");
+  motorPin(LEFTMOTOR, LEFTMOTORPIN, "LEFTMOTOR");
+  motorPin(RIGHTMOTOR, RIGHTMOTORPIN, "RIGHTMOTOR");
+  motorPin(BACKMOTOR, BACKMOTORPIN, "BACKMOTOR");
 }
 
 /** Individually pins motors
@@ -271,11 +271,11 @@ void controlSplitScheme() {
 
 void controlPreciseScheme() {
   Serial.print("CPS");
-  leftTrigger();
   leftJoystick();
-  leftReverse();
-  rightTrigger();
   rightJoystick();
+  leftTrigger();
+  rightTrigger();
+  leftReverse();
   rightReverse();
 }
 
@@ -336,9 +336,9 @@ void dualServoLeftJoystick() {
       else                   power = map(joystick_input, JOYSTICKMIN, -1*JOYSTICKDEADZONE, WPMIN, WPMID);
 
       Serial.print("|");
-      Serial.print(right_power);
-      Serial.print("|");
       Serial.print(left_power);
+      Serial.print("|");
+      Serial.print(right_power);
 
       RIGHTSERVO.writeMicroseconds(right_power);
       LEFTSERVO.writeMicroseconds(left_power);
