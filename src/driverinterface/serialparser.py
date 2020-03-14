@@ -76,7 +76,7 @@ class SerialParser:
         """
         Returns the list of raw information of the motors/servos.
         """
-        return motors_servos_dict
+        return self.motors_servos_dict
 
     def complete_setup(self):
         """
