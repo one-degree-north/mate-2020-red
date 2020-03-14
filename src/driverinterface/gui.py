@@ -1,60 +1,89 @@
-import Tkinter as tkinter
-from matplotlib import pyplot as plt
-import matplotlib.colors as mcolors
-from matplotlib.animation import FuncAnimation
-import serial
-from datetime import time
-from matplotlib.backends import FigureCanvasTkAgg
+#pygame graph_update.py
 
-arduino = serial.Serial('/dev/cu.usbmodem141401', 115200)
-data = arduino.readline()
-pieces = data.split("|")
-power = []
-for i in range(len(pieces)):
-    if i>0 and i%2 != 0:
-        sub_array = pieces[i].split(">")
-        power.append(sub_array[0])
-    else:
-        i+=1
-fig1, ax1 = plt.subplots()
-def init_func():
-    ax1.plot(self)
-
-class Application(tk.Frame):
-    def___init____(self, master=None)
-    super().____init____(master)
-    root=Tk()
-    new_window = Tk()
-    new_window.title("Graph Monitor")
-    time_counter= 0
-    timer = 0
-    programIsRunning = True
-    while programIsRunning:
-        start = datetime.now() #(hour, minute, second, microsecond) --> format in which time is stored
-        microsecond_start = (((start.minute*60)+(start.hour*60*60)+(start.second))*1000000) + start.microsecond
-            def update_plot(i):
-                data_skip = 1
-                ax1.clear()
-                ax1.axis('equal')
-                for i in range(len(power)):
-                    angle_new = ((power[i]-1000)/1000)*360
-                    level = ax1.set_label(power[i])
-                    while power[i]<1500 and power[i]>1000:
-                        ax1.pie([2000-power[i:i+data_skip], power[i:i+data_skip]],colors='black', startangle=0) #look into this more
-                    while power[i]>1500 and power[i]<2000:
-                        start_time = (((((datetime.now().minute)*60 + datetime.now().second + ((datetime.now().hour)*60*60))*1000000) + datetime.now().microsecond)
-                        ax1.pie([power[i:i+data_skip], 2000-power[i:i+data_skip]],colors='blue',startangle=angle_new) #look into this more
-                        if power[i]<1500:
-                            end_time = (((((datetime.now().minute)*60 + datetime.now().second + ((datetime.now().hour)*60*60))*1000000) + datetime.now().microsecond)
-                            time_counter = end_time - start_time           
-            animation = FuncAnimation(ax1, update_plot, frames=np.arange(0,len(power), data_skip), init_func = init_func, interval = 0.001)
-    canvas = FigureCanvasTkAgg(ax1, root)
-    canvas.draw()
-    canvas.get_tk_widget().pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=1)
+import pygame as pg
+import serial 
+import matplotlib as mlt
+from matplotlib import pyplot
+from datetime import *
 
 
+class Graph(object): #no need for object, just temporary
+    def pygame_init():
+        pygame.init()
+        start = datetime.now()
+        time = (((start.minute*60)+(start.hour*60*60)+(start.second))*1000000) + start.microsecond
+        return time
+    
+    def pygame_quit(button_click):
+        pygame.quit()
 
+    def init_graph(data_serial):
+        names = [ax0,ax1,ax2,ax3,ax4,ax5,ax6,ax7]
+        all_powers = data_serial()
+        for i in range(0, len(all_powers[0])):
+            names[i].plot(self) #main method self?
+        
+    def data_serial():
+        arduino =  serial.Serial('/dev/cu.usbmodem141401', 115200)
+        data = arduino.readlines() #creates list for multiple lines through serial_monitor
+        data.split(">")
+        time = pygame_init()
+        for line in data:
+            line.split("|")
+        while ((((datetime.now().minute*60)+(datetime.now().hour*60*60)+(datetime.now().second))*1000000) + datetime.now().microsecond - time%21) == 0 #time in microseconds
+            for i in data:
+                if i == 0:
+                    powers.append([data[i][1],data[i][2]])
+                elif i == 1:
+                    powers.append([data[i][1], data[i][2]])
+                elif i > 1:
+                        powers.append(data[i][1])
+                powers_new = []
+                powers_new.append(powers[0][0])
+                powers_new.append(powers[0][1])
+                powers_new.append(powers[1][0])
+                powers_new.append(powers[1][1])
+                powers_new.append(powers[2])
+                powers_new.append(powers[3])
+                powers_new.append(powers[4])
+                powers_new.append(powers[5])
+                all_powers.append(powers_new)
+                powers = []
+        return all_powers
 
-app = GraphPage()
-app.mainloop()
+    def graph_object(data_serial):
+        MAX=2000
+        pygame.display.init()
+        start = pygame.display.get_init()
+        if start != True:
+            pygame.display.init()
+        else:
+            pygame.display.set_mode(size=(500,500), flags = 0)
+        all_powers = data_serial()
+        fig, axs = plt.subplot(len(all_powers[0]))
+        fig.suptitle("Power charts for different motors")
+        data_skip = 1
+        names = [ax0,ax1,ax2,ax3,ax4,ax5,ax6,ax7]
+        for c in range(0, len(all_powers)):
+            for i in range(0, len(all_powers[c])):
+                angle_new = ((all_powers[c][i]-1000)/1000)*360
+                level = axs[i].set_label(all_powers[i][c])
+                while all_powers[c][i]> 1500 and all_powers[c][i]<2000:
+                    axs[i] = names[i].pie([all_powers[c][i:i+data_skip],MAX-all_powers[c][i:i+data_skip]], colors = "blue", startangle = angle_new)
+                while all_powers[c][i]<1500 and all_powers[c][i]>1000:
+                    axs[i] = names[i].pie([MAX-all_powers[c][i:i+data_skip], all_powers[c][i:i+data_skip]], colors = "black", startangle = 0)
 
+        pygame.display.update()
+
+    def main():
+        dif_time = time
+        pygame_init()
+        data_serial()
+        graph_object()
+        while True: # updating the plot using FuncAnimation
+            for i in range(0, 8):
+                animation = FuncAnimation(axs[i], graph_object, frames=np.arange(0,len(all_powers), data_skip), init_func = graph_object, interval = 0.001)
+            plt.show()
+        pygame_quit()
+
+                    
