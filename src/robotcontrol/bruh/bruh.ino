@@ -214,25 +214,26 @@ void setPwmFrequency(int pin, int divisor) {
  *    and servos have been properly attached to pins.
  */
 void secondAttachAndPin() {
-  motorPin(LEFTMOTOR, LEFTMOTORPIN);
-  servoPin(LEFTSERVO, LEFTSERVOPIN);
-  motorPin(RIGHTMOTOR, RIGHTMOTORPIN);
-  servoPin(RIGHTSERVO, RIGHTSERVOPIN);
-  motorPin(BACKMOTOR, BACKMOTORPIN);
-  servoPin(BACKSERVO, BACKSERVOPIN);
+  motorPin(LEFTMOTOR, LEFTMOTORPIN, "LEFTMOTOR");
+  servoPin(LEFTSERVO, LEFTSERVOPIN, "LEFTSERVO");
+  motorPin(RIGHTMOTOR, RIGHTMOTORPIN, "RIGHTMOTOR");
+  servoPin(RIGHTSERVO, RIGHTSERVOPIN, "RIGHTSERVO");
+  motorPin(BACKMOTOR, BACKMOTORPIN, "BACKMOTOR");
+  servoPin(BACKSERVO, BACKSERVOPIN, "BACKSERVO");
 }
 
 /** Individually pins motors
  *    Used for convenience, rather than having to retype this block of code multiple times
  *    for each motor.
  */
-void motorPin(Servo motor, int pin) {
+void motorPin(Servo motor, int pin, String name) {
   motor.attach(pin, ESCMIN, ESCMAX);            // (pin, min pulse width, max pulse width in microseconds)
   delay(200);
   motor.writeMicroseconds(1800);                // throttle init
   delay(200);
   motor.writeMicroseconds(ESCMID);              // stop
-  Serial.print("Motor setup to pin ");
+  Serial.print(name);
+  Serial.print(" motor setup to pin ");
   Serial.print(pin);
   Serial.println(" complete.");
 }
@@ -241,12 +242,13 @@ void motorPin(Servo motor, int pin) {
  *    Used for convenience, rather than having to retype this block of code multiple times
  *    for each servo.
  */
-void servoPin(Servo servo, int pin) {
+void servoPin(Servo servo, int pin, String name) {
   servo.attach(pin, WPMIN, WPMAX);
   servo.writeMicroseconds(WPMID);
   delay(200);
   servo.writeMicroseconds(WPMID);
-  Serial.print("Servo setup to pin ");
+  Serial.print(name);
+  Serial.print(" servo setup to pin ");
   Serial.print(pin);
   Serial.println(" complete.");
 }
