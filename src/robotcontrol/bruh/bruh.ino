@@ -271,13 +271,12 @@ void controlSplitScheme() {
 
 void controlPreciseScheme() {
   Serial.print("CPS");
-  leftJoystick();
   leftTrigger();
+  leftJoystick();
   leftReverse();
-  rightJoystick();
   rightTrigger();
+  rightJoystick();
   rightReverse();
-  directionalPad();
 }
 
 /** Switches control schemes
@@ -527,63 +526,3 @@ void rightReverse() {
     right_reverse = !right_reverse;
 }
 
-/** Maps the directional pad to the back motor and servo
- *    The reasoning for this is that the back motors and servos do not require as much 
- *    precision compared to the ones located on the sides. 
- */
-void directionalPad() {
-  dpadMotor();
-  dpadServo();
-}
-
-/** Maps the up and down buttons of the directional pad to the motor
- * 
- */
-void dpadMotor() {
-  if(Xbox.getButtonClick(UP))           rear_servo_setting = 1;
-  else if (Xbox.getButtonClick(DOWN))   rear_servo_setting = 2;
-  else if (Xbox.getButtonClick(X))      rear_servo_setting = 0;
-  
-  if(rear_servo_setting == 2) {
-      BACKSERVO.writeMicroseconds(ESCMAX);
-      Serial.print("LEFT");
-  }
-  else if (rear_servo_setting == 1) {
-      BACKSERVO.writeMicroseconds(ESCMIN);
-      Serial.print("RIGHT");
-  }
-  else {
-      BACKSERVO.writeMicroseconds(ESCMID);
-      Serial.print("NONE");
-  }
-  Serial.print(">");
-}
-
-/** Maps the right and left buttons of the directional pad to the servo
- *    The back servo does not require as much precision as the side motors. There are
- *    only three settings for the servo: rightmost, leftmost, and equilibrium. Furthermore,
- *    the servo will remain in its current setting unless it is told to change by a
- *    different button. To return to equilibrium, the 'X' button on the controller must be
- *    pressed.
- */
-void dpadServo() {
-  rear_servo_setting = 0;
-  if(Xbox.getButtonClick(RIGHT))        rear_servo_setting = 1;
-  else if (Xbox.getButtonClick(LEFT))   rear_servo_setting = 2;
-  else if (Xbox.getButtonClick(Y))      rear_servo_setting = 0;
-
-  if(rear_servo_setting == 2) {
-      BACKSERVO.writeMicroseconds(WPMIN);
-      Serial.print("LEFT");
-  }
-  else if (rear_servo_setting == 1) {
-      BACKSERVO.writeMicroseconds(WPMAX);
-      Serial.print("RIGHT");
-  }
-  else {
-      BACKSERVO.writeMicroseconds(WPMID);
-      Serial.print("NONE");
-  }
-
-  Serial.print(">");
-}
