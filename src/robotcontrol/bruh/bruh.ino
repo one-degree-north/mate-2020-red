@@ -264,13 +264,13 @@ void stopTest() {
 }
 
 void controlSplitScheme() {
-  Serial.print("CSS");
+  Serial.print("CSS)");
   dualServoLeftJoystick();
   dualMotorRightJoystick();
 }
 
 void controlPreciseScheme() {
-  Serial.print("CPS");
+  Serial.print("CPS)");
   leftJoystick();
   rightJoystick();
   leftTrigger();
