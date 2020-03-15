@@ -53,6 +53,7 @@ class ArduinoServo:
         self.display_rect = None
         self.equilibrium_xpos = 0
         self.equilibrium_ypos = 0
+        self.output = 0
 
     def get_name(self):
         return self.name
