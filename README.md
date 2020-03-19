@@ -1,13 +1,6 @@
 # mate-red
-## MATE Red Repo
 
-The Mate Red Repo is divided into designs and code
-
-* Software - The code for Arduino, along with the Driver interface
-
-* Hardware - Contains hardware info and electric schamatics
-
-
+The repository for One Degree North's Red team. The technical paper can be found [here](https://docs.google.com/document/d/11K5dcY7s_mxuk-Gu6wQhp6wE9jx9zbS2zczkxVFlV6A/). 
 
 ### Code
 
@@ -32,8 +25,6 @@ XBOXONE.h - [**USB Host Shield**](https://github.com/felis/USB_Host_Shield_2.0)
 TimeLib.h - [**Time**](https://github.com/PaulStoffregen/Time)
 
 ### Hardware
-
-##### The Schematics folder has the electric schematics in it
 
 - Control Station
   - Raspberry Pi 4 B 2GB
